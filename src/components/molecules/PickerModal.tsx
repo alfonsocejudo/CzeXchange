@@ -4,6 +4,7 @@ import styled, {useTheme} from 'styled-components/native';
 import Label from '../atoms/Label';
 import DismissibleModal from './DismissibleModal';
 import {useSearchFilter} from '../../hooks/useSearchFilter';
+import {getCurrencyFlag} from '../../constants/flags';
 
 const Overlay = styled.View`
   flex: 1;
@@ -107,7 +108,7 @@ export default function PickerModal({
               keyboardShouldPersistTaps="handled"
               renderItem={({item}) => (
                 <OptionRow onPress={() => handleSelect(item)}>
-                  <OptionText>{item}</OptionText>
+                  <OptionText>{getCurrencyFlag(item)} {item}</OptionText>
                 </OptionRow>
               )}
               ListEmptyComponent={<EmptyText>No matches</EmptyText>}

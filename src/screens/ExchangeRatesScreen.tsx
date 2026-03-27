@@ -6,6 +6,7 @@ import ExchangeBoard from '../components/organisms/ExchangeBoard';
 import DismissibleModal from '../components/molecules/DismissibleModal';
 import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
+import {useTargetCurrency} from '../context/TargetCurrencyContext';
 import {SOURCE_NAMES} from '../constants/sources';
 import {textShadow} from '../theme/textShadows';
 
@@ -65,6 +66,7 @@ const SORT_OPTIONS: {key: SortMode; label: string}[] = [
 
 export default function ExchangeRatesScreen({navigation}: any) {
   const {source} = useSource();
+  const {setTargetCode} = useTargetCurrency();
   const {data: rates, isLoading, error, dataUpdatedAt, refetch} = useExchangeRates();
   const [sortMode, setSortMode] = useState<SortMode>('default');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -92,6 +94,10 @@ export default function ExchangeRatesScreen({navigation}: any) {
         sortMode={sortMode}
         sourceName={SOURCE_NAMES[source]}
         onRefresh={refetch}
+        onCurrencyPress={code => {
+          setTargetCode(code);
+          navigation.navigate('Convert');
+        }}
       />
 
       <DismissibleModal visible={menuOpen} onClose={() => setMenuOpen(false)}>

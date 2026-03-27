@@ -3,6 +3,7 @@ import {render, screen, fireEvent} from '@testing-library/react-native';
 import {ThemeProvider} from 'styled-components/native';
 import {theme} from '../../theme';
 import {SourceProvider} from '../../context/SourceContext';
+import {TargetCurrencyProvider} from '../../context/TargetCurrencyContext';
 import ConvertScreen from '../ConvertScreen';
 
 jest.mock('../../hooks/useExchangeRates');
@@ -21,7 +22,7 @@ const MOCK_RATES = [
 function renderWithTheme(ui: React.ReactElement) {
   return render(
     <ThemeProvider theme={theme}>
-      <SourceProvider>{ui}</SourceProvider>
+      <SourceProvider><TargetCurrencyProvider>{ui}</TargetCurrencyProvider></SourceProvider>
     </ThemeProvider>,
   );
 }
@@ -37,12 +38,12 @@ beforeEach(() => {
 
 it('renders the amount input with default value', () => {
   renderWithTheme(<ConvertScreen />);
-  expect(screen.getByDisplayValue('1,000')).toBeTruthy();
+  expect(screen.getByDisplayValue('1,000.00')).toBeTruthy();
 });
 
 it('renders the target currency label', () => {
   renderWithTheme(<ConvertScreen />);
-  expect(screen.getByText('Target Currency')).toBeTruthy();
+  expect(screen.getByText('1 EUR = 24.545 CZK')).toBeTruthy();
 });
 
 it('converts CZK to target currency on button press', () => {

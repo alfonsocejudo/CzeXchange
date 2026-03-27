@@ -83,6 +83,7 @@ interface ExchangeBoardProps {
   sortMode?: SortMode;
   sourceName?: string;
   onRefresh?: () => void;
+  onCurrencyPress?: (code: string) => void;
 }
 
 function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
@@ -125,6 +126,7 @@ export default function ExchangeBoard({
   sortMode = 'default',
   sourceName,
   onRefresh,
+  onCurrencyPress,
 }: ExchangeBoardProps) {
   const theme = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -195,7 +197,7 @@ export default function ExchangeBoard({
       <FlatList
         data={filteredRates}
         keyExtractor={item => item.code}
-        renderItem={({item}) => <CurrencyRow rate={item} />}
+        renderItem={({item}) => <CurrencyRow rate={item} onPress={onCurrencyPress} />}
         indicatorStyle="white"
       />
     </GlassPanel>

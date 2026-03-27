@@ -1,4 +1,5 @@
 import React from 'react';
+import {Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import {ExchangeRate} from '../../types/exchangeRate';
 import {getCurrencyFlag} from '../../constants/flags';
@@ -64,13 +65,15 @@ const RateText = styled.Text`
 
 interface CurrencyRowProps {
   rate: ExchangeRate;
+  onPress?: (code: string) => void;
 }
 
-export default function CurrencyRow({rate}: CurrencyRowProps) {
+export default function CurrencyRow({rate, onPress}: CurrencyRowProps) {
   const currencyLabel =
     rate.amount !== 1 ? `${rate.currency} (${rate.amount})` : rate.currency;
 
   return (
+    <Pressable onPress={onPress ? () => onPress(rate.code) : undefined}>
     <RowContainer>
       <CurrencyInfo>
         <FlagContainer>
@@ -85,5 +88,6 @@ export default function CurrencyRow({rate}: CurrencyRowProps) {
         <RateText>{rate.rate.toFixed(3)}</RateText>
       </RateWell>
     </RowContainer>
+    </Pressable>
   );
 }

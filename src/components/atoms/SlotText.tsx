@@ -2,8 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import styled from 'styled-components/native';
 
-const DigitText = styled.Text<{stale?: boolean}>`
-  font-size: 48px;
+const DigitText = styled.Text<{stale?: boolean; size?: number}>`
+  font-size: ${({size}) => size ?? 48}px;
   font-weight: bold;
   color: ${({stale, theme}) =>
     stale ? theme.colors.textDisabled : theme.colors.success};
@@ -21,11 +21,13 @@ function SlotDigit({
   delay,
   animate,
   stale,
+  fontSize,
 }: {
   char: string;
   delay: number;
   animate: number;
   stale?: boolean;
+  fontSize?: number;
 }) {
   const isDigit = DIGITS.includes(char);
   const [display, setDisplay] = useState(char);
@@ -58,16 +60,17 @@ function SlotDigit({
     };
   }, [char, delay, animate, isDigit]);
 
-  return <DigitText stale={stale}>{isDigit ? display : char}</DigitText>;
+  return <DigitText stale={stale} size={fontSize}>{isDigit ? display : char}</DigitText>;
 }
 
 interface SlotTextProps {
   value: string;
   animate: number;
   stale?: boolean;
+  fontSize?: number;
 }
 
-export default function SlotText({value, animate, stale}: SlotTextProps) {
+export default function SlotText({value, animate, stale, fontSize}: SlotTextProps) {
   const chars = value.split('');
   let digitIndex = 0;
 
@@ -80,7 +83,7 @@ export default function SlotText({value, animate, stale}: SlotTextProps) {
           digitIndex++;
         }
         return (
-          <SlotDigit key={i} char={char} delay={delay} animate={animate} stale={stale} />
+          <SlotDigit key={i} char={char} delay={delay} animate={animate} stale={stale} fontSize={fontSize} />
         );
       })}
     </View>

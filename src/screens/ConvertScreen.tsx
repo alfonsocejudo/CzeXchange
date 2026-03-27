@@ -1,7 +1,6 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {
   Text,
-  TextInput,
   ImageBackground,
   Keyboard,
   Pressable,
@@ -9,6 +8,7 @@ import {
   Easing,
   StyleSheet,
 } from 'react-native';
+import CurrencyInput, {formatNumber} from 'react-native-currency-input';
 import styled, {useTheme} from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import GlassPanel from '../components/organisms/GlassPanel';
@@ -18,9 +18,11 @@ import SlotText from '../components/atoms/SlotText';
 import SourceTag from '../components/molecules/SourceTag';
 import {LoadingState, ErrorState} from '../components/molecules/LoadingErrorState';
 import {useExchangeRates} from '../hooks/useExchangeRates';
+import {getCurrencyFlag} from '../constants/flags';
 import {useSource} from '../context/SourceContext';
+import {useTargetCurrency} from '../context/TargetCurrencyContext';
 import {SOURCE_NAMES} from '../constants/sources';
-import {useCurrencyFormatter} from '../hooks/useCurrencyFormatter';
+import {getNumberFormatSettings} from 'react-native-localize';
 import {textShadow, textShadowStyle} from '../theme/textShadows';
 import {images} from '../constants/assets';
 
@@ -69,9 +71,13 @@ const ResultWell = styled.View`
   padding: 18px ${({theme}) => theme.spacing.md};
   margin-bottom: ${({theme}) => theme.spacing.xs};
   align-items: center;
+  overflow: hidden;
 `;
 
-const ResultText = styled.Text`
+const ResultText = styled.Text.attrs({
+  numberOfLines: 1,
+  adjustsFontSizeToFit: true,
+})`
   font-size: 48px;
   font-weight: bold;
   color: ${({theme}) => theme.colors.success};
@@ -94,7 +100,7 @@ export default function ConvertScreen() {
   const themeColors = useTheme();
   const {source} = useSource();
   const {data: rates, isLoading, error} = useExchangeRates();
-  const {formatAmount, formatResult, stripGrouping} = useCurrencyFormatter();
+  const {decimalSeparator, groupingSeparator} = getNumberFormatSettings();
 
   const convertIconStyle = useMemo(() => ({
     fontSize: 64,
@@ -113,8 +119,8 @@ export default function ConvertScreen() {
     padding: 0,
     ...textShadowStyle(themeColors.textShadows.primaryGlow),
   }), [themeColors]);
-  const [amount, setAmount] = useState('1000');
-  const [targetCode, setTargetCode] = useState('EUR');
+  const [amount, setAmount] = useState<number | null>(1000);
+  const {targetCode, setTargetCode} = useTargetCurrency();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [resultCode, setResultCode] = useState('EUR');
@@ -140,8 +146,8 @@ export default function ConvertScreen() {
       useNativeDriver: true,
     }).start();
 
-    const numAmount = parseFloat(amount);
-    if (!rates || isNaN(numAmount)) {
+    const numAmount = amount;
+    if (!rates || numAmount == null) {
       setResult('--');
       return;
     }
@@ -151,7 +157,11 @@ export default function ConvertScreen() {
       return;
     }
     const converted = numAmount / (rate.rate / rate.amount);
-    setResult(formatResult(converted));
+    setResult(formatNumber(converted, {
+      separator: decimalSeparator,
+      delimiter: groupingSeparator,
+      precision: 2,
+    }));
     setResultCode(targetCode);
     setSlotTrigger(prev => prev + 1);
   };
@@ -182,10 +192,13 @@ export default function ConvertScreen() {
       <GlassPanel expand={false}>
             <SourceTag name={SOURCE_NAMES[source]} />
             <InputWell>
-              <TextInput
+              <CurrencyInput
                 style={amountInputStyle}
-                value={formatAmount(amount)}
-                onChangeText={text => setAmount(stripGrouping(text))}
+                value={amount}
+                onChangeValue={setAmount}
+                delimiter={groupingSeparator}
+                separator={decimalSeparator}
+                precision={2}
                 keyboardType="numeric"
                 placeholderTextColor={themeColors.colors.textDisabled}
                 placeholder="0"
@@ -196,10 +209,17 @@ export default function ConvertScreen() {
             <PickerWell
               onPress={() => setPickerOpen(true)}
               activeOpacity={0.7}>
-              <PickerText>{targetCode}</PickerText>
+              <PickerText>{getCurrencyFlag(targetCode)} {targetCode}</PickerText>
               <ChevronText>{'\u25BC'}</ChevronText>
             </PickerWell>
-            <FieldLabel>Target Currency</FieldLabel>
+            <FieldLabel>
+              {(() => {
+                const r = rates?.find(rt => rt.code === targetCode);
+                return r
+                  ? `${r.amount} ${r.code} = ${r.rate.toFixed(3)} CZK`
+                  : targetCode;
+              })()}
+            </FieldLabel>
 
             <PickerModal
               visible={pickerOpen}
@@ -214,7 +234,7 @@ export default function ConvertScreen() {
 
             <ResultWell>
               {result ? (
-                <SlotText value={result} animate={slotTrigger} stale={targetCode !== resultCode} />
+                <SlotText value={result} animate={slotTrigger} stale={targetCode !== resultCode} fontSize={Math.min(48, 320 / result.length)} />
               ) : (
                 <ResultText>--</ResultText>
               )}

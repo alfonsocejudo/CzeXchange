@@ -3,6 +3,7 @@ import {render, screen} from '@testing-library/react-native';
 import {ThemeProvider} from 'styled-components/native';
 import {theme} from '../../theme';
 import {SourceProvider} from '../../context/SourceContext';
+import {TargetCurrencyProvider} from '../../context/TargetCurrencyContext';
 import ExchangeRatesScreen from '../ExchangeRatesScreen';
 
 jest.mock('../../hooks/useExchangeRates');
@@ -18,7 +19,7 @@ const mockNavigation = {setOptions: jest.fn()} as any;
 function renderWithProviders(ui: React.ReactElement) {
   return render(
     <ThemeProvider theme={theme}>
-      <SourceProvider>{ui}</SourceProvider>
+      <SourceProvider><TargetCurrencyProvider>{ui}</TargetCurrencyProvider></SourceProvider>
     </ThemeProvider>,
   );
 }
