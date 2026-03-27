@@ -1,6 +1,5 @@
-import React, {useState, useMemo, useRef, useCallback} from 'react';
+import React, {useState, useMemo, useRef} from 'react';
 import {
-  Text,
   ImageBackground,
   Keyboard,
   Platform,

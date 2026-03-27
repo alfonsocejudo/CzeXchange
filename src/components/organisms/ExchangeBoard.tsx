@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {FlatList, TextInput, Pressable} from 'react-native';
+import {FlatList, Pressable} from 'react-native';
 import styled, {useTheme} from 'styled-components/native';
 import {ExchangeRate} from '../../types/exchangeRate';
 import CurrencyRow from '../molecules/CurrencyRow';

@@ -1,5 +1,5 @@
-import React, {useMemo} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground, Platform, StyleSheet} from 'react-native';
+import React, {useCallback, useMemo} from 'react';
+import {View, TouchableOpacity, Text, ImageBackground, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -53,6 +53,12 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   );
 }
 
+function HeaderTitle({children, style}: {children: React.ReactNode; style: object}) {
+  return (
+    <Text style={style}>{typeof children === 'string' ? children.toUpperCase() : ''}</Text>
+  );
+}
+
 export default function BottomTabs() {
   const theme = useTheme();
 
@@ -64,16 +70,26 @@ export default function BottomTabs() {
     ...textShadowStyle(theme.textShadows.embossed),
   }), [theme]);
 
+  const renderTabBar = useCallback(
+    (props: BottomTabBarProps) => <IndustrialTabBar {...props} />,
+    [],
+  );
+
+  const renderHeaderTitle = useCallback(
+    ({children}: {children: React.ReactNode}) => (
+      <HeaderTitle style={headerTitleStyle}>{children}</HeaderTitle>
+    ),
+    [headerTitleStyle],
+  );
+
   return (
     <ImageBackground source={images.bg} style={styles.bg} resizeMode="cover">
       <Tab.Navigator
-        tabBar={props => <IndustrialTabBar {...props} />}
+        tabBar={renderTabBar}
         screenOptions={{
           headerStyle: {backgroundColor: 'transparent', shadowColor: 'transparent'},
           headerTintColor: theme.colors.embossedText,
-          headerTitle: ({children}) => (
-            <Text style={headerTitleStyle}>{typeof children === 'string' ? children.toUpperCase() : ''}</Text>
-          ),
+          headerTitle: renderHeaderTitle,
           sceneStyle: {backgroundColor: 'transparent'},
         }}>
         <Tab.Screen

@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {Platform, Pressable} from 'react-native';
+import {Platform, Pressable, StyleSheet} from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
@@ -8,7 +8,6 @@ import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {useTargetCurrency} from '../context/TargetCurrencyContext';
 import {SOURCE_NAMES} from '../constants/sources';
-import {textShadow} from '../theme/textShadows';
 
 export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
@@ -96,11 +95,11 @@ export default function ExchangeRatesScreen({navigation}: any) {
       <Pressable onPress={() => setMenuOpen(true)} hitSlop={8}>
         {({pressed}) =>
           Platform.OS === 'android' ? (
-            <SortButtonWrap style={pressed ? {opacity: 0.6, backgroundColor: '#6b6565'} : undefined}>
+            <SortButtonWrap style={pressed ? pressedStyles.androidButton : undefined}>
               <SortIcon>{'\u2195'}</SortIcon>
             </SortButtonWrap>
           ) : (
-            <SortIcon style={pressed ? {opacity: 0.5} : undefined}>{'\u2195'}</SortIcon>
+            <SortIcon style={pressed ? pressedStyles.iosIcon : undefined}>{'\u2195'}</SortIcon>
           )
         }
       </Pressable>
@@ -150,3 +149,8 @@ export default function ExchangeRatesScreen({navigation}: any) {
     </AppScreen>
   );
 }
+
+const pressedStyles = StyleSheet.create({
+  androidButton: {opacity: 0.6, backgroundColor: '#6b6565'},
+  iosIcon: {opacity: 0.5},
+});
