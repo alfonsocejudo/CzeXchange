@@ -1,6 +1,6 @@
 import React from 'react';
-import {ActivityIndicator} from 'react-native';
-import styled, {useTheme} from 'styled-components/native';
+import { ActivityIndicator } from 'react-native';
+import styled, { useTheme } from 'styled-components/native';
 
 const CenteredContainer = styled.View`
   flex: 1;
@@ -9,8 +9,8 @@ const CenteredContainer = styled.View`
 `;
 
 const ErrorText = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.primaryContainer};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.primaryContainer};
 `;
 
 export function LoadingState() {
@@ -22,7 +22,11 @@ export function LoadingState() {
   );
 }
 
-export function ErrorState({message = 'Failed to load rates'}: {message?: string}) {
+export function ErrorState({
+  message = 'Failed to load rates',
+}: {
+  message?: string;
+}) {
   return (
     <CenteredContainer>
       <ErrorText>{message}</ErrorText>

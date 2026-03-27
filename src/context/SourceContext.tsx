@@ -14,9 +14,7 @@ export function SourceProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(() => ({ source, setSource }), [source]);
 
   return (
-    <SourceContext.Provider value={value}>
-      {children}
-    </SourceContext.Provider>
+    <SourceContext.Provider value={value}>{children}</SourceContext.Provider>
   );
 }
 

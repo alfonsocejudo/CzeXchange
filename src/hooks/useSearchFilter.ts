@@ -1,9 +1,9 @@
-import {useMemo, useState} from 'react';
+import { useMemo, useState } from 'react';
 
 export function useSearchFilter<T>(
   items: T[],
   match: (item: T, query: string) => boolean,
-): {query: string; setQuery: (q: string) => void; filtered: T[]} {
+): { query: string; setQuery: (q: string) => void; filtered: T[] } {
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -14,5 +14,5 @@ export function useSearchFilter<T>(
     return items.filter(item => match(item, q));
   }, [items, query, match]);
 
-  return {query, setQuery, filtered};
+  return { query, setQuery, filtered };
 }

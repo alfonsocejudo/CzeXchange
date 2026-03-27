@@ -1,37 +1,37 @@
-import React, {useCallback, useMemo, useState} from 'react';
-import {FlatList, Pressable} from 'react-native';
-import styled, {useTheme} from 'styled-components/native';
-import {ExchangeRate} from '../../types/exchangeRate';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FlatList, Pressable } from 'react-native';
+import styled, { useTheme } from 'styled-components/native';
+import { ExchangeRate } from '../../types/exchangeRate';
 import CurrencyRow from '../molecules/CurrencyRow';
 import GlassPanel from './GlassPanel';
 import Label from '../atoms/Label';
-import {LoadingState, ErrorState} from '../molecules/LoadingErrorState';
+import { LoadingState, ErrorState } from '../molecules/LoadingErrorState';
 import SourceTag from '../molecules/SourceTag';
-import {getCurrencyFlag} from '../../constants/flags';
-import {textShadow} from '../../theme/textShadows';
-import {useSearchFilter} from '../../hooks/useSearchFilter';
-import type {SortMode} from '../../screens/ExchangeRatesScreen';
+import { getCurrencyFlag } from '../../constants/flags';
+import { textShadow } from '../../theme/textShadows';
+import { useSearchFilter } from '../../hooks/useSearchFilter';
+import type { SortMode } from '../../screens/ExchangeRatesScreen';
 
 const HeaderBar = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background-color: ${({theme}) => theme.colors.surfaceContainerLow};
-  padding: ${({theme}) => theme.spacing.sm} ${({theme}) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.surfaceContainerLow};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   border-radius: 4px;
-  margin-bottom: ${({theme}) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const HeaderLabel = styled(Label)`
-  font-size: ${({theme}) => theme.fontSizes.xs};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   letter-spacing: 1px;
 `;
 
 const TimestampText = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.primary};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.primary};
   font-weight: bold;
-  margin-left: ${({theme}) => theme.spacing.sm};
+  margin-left: ${({ theme }) => theme.spacing.sm};
   ${textShadow('primaryGlowSubtle')}
 `;
 
@@ -39,12 +39,12 @@ const ColumnHeaders = styled.View`
   flex-direction: row;
   align-items: center;
   height: 28px;
-  padding: 0px ${({theme}) => theme.spacing.md};
-  margin-bottom: ${({theme}) => theme.spacing.sm};
+  padding: 0px ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ColumnLabel = styled(Label)`
-  font-size: ${({theme}) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   letter-spacing: 1px;
 `;
 
@@ -55,24 +55,24 @@ const CurrencyColumn = styled.View`
 `;
 
 const SearchIcon = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.onSurfaceVariant};
-  margin-left: ${({theme}) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 const SearchInput = styled.TextInput`
   flex: 1;
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.onSurface};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.onSurface};
   padding: 0px;
-  margin-left: ${({theme}) => theme.spacing.sm};
+  margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 const RateColumn = styled.View`
   min-width: 76px;
-  margin-left: ${({theme}) => theme.spacing.sm};
+  margin-left: ${({ theme }) => theme.spacing.sm};
   align-items: flex-end;
-  padding-right: ${({theme}) => theme.spacing.sm};
+  padding-right: ${({ theme }) => theme.spacing.sm};
 `;
 
 interface ExchangeBoardProps {
@@ -93,10 +93,18 @@ function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
       sorted.sort((a, b) => a.code.localeCompare(b.code));
       break;
     case 'highest':
-      sorted.sort((a, b) => (b.amount ? b.rate / b.amount : 0) - (a.amount ? a.rate / a.amount : 0));
+      sorted.sort(
+        (a, b) =>
+          (b.amount ? b.rate / b.amount : 0) -
+          (a.amount ? a.rate / a.amount : 0),
+      );
       break;
     case 'lowest':
-      sorted.sort((a, b) => (a.amount ? a.rate / a.amount : 0) - (b.amount ? b.rate / b.amount : 0));
+      sorted.sort(
+        (a, b) =>
+          (a.amount ? a.rate / a.amount : 0) -
+          (b.amount ? b.rate / b.amount : 0),
+      );
       break;
     default:
       sorted.sort((a, b) => {
@@ -115,7 +123,9 @@ function formatTimestamp(ms?: number): string {
   }
   const d = new Date(ms);
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+    d.getHours(),
+  )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
 export default function ExchangeBoard({
@@ -131,7 +141,10 @@ export default function ExchangeBoard({
   const theme = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const sortedRates = useMemo(() => sortRates(rates, sortMode), [rates, sortMode]);
+  const sortedRates = useMemo(
+    () => sortRates(rates, sortMode),
+    [rates, sortMode],
+  );
 
   const matchRate = useCallback(
     (r: ExchangeRate, q: string) =>
@@ -140,11 +153,16 @@ export default function ExchangeBoard({
       r.country.toLowerCase().includes(q),
     [],
   );
-  const {query: searchQuery, setQuery: setSearchQuery, filtered: filteredRates} =
-    useSearchFilter(sortedRates, matchRate);
+  const {
+    query: searchQuery,
+    setQuery: setSearchQuery,
+    filtered: filteredRates,
+  } = useSearchFilter(sortedRates, matchRate);
 
   const renderCurrencyRow = useCallback(
-    ({item}: {item: ExchangeRate}) => <CurrencyRow rate={item} onPress={onCurrencyPress} />,
+    ({ item }: { item: ExchangeRate }) => (
+      <CurrencyRow rate={item} onPress={onCurrencyPress} />
+    ),
     [onCurrencyPress],
   );
 
@@ -175,7 +193,12 @@ export default function ExchangeBoard({
         <CurrencyColumn>
           {searchOpen ? (
             <>
-              <Pressable onPress={() => { setSearchOpen(false); setSearchQuery(''); }}>
+              <Pressable
+                onPress={() => {
+                  setSearchOpen(false);
+                  setSearchQuery('');
+                }}
+              >
                 <SearchIcon>{'\u2715'}</SearchIcon>
               </Pressable>
               <SearchInput

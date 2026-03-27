@@ -1,5 +1,5 @@
-import React, {useRef, useCallback} from 'react';
-import {Pressable, Animated, Easing} from 'react-native';
+import React, { useRef, useCallback } from 'react';
+import { Pressable, Animated, Easing } from 'react-native';
 import styled from 'styled-components/native';
 import Label from '../atoms/Label';
 
@@ -7,16 +7,16 @@ const Row = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: ${({theme}) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const Name = styled(Label)``;
 
 const RefreshIcon = styled(Animated.Text)`
-  font-size: ${({theme}) => theme.fontSizes.lg};
-  line-height: ${({theme}) => theme.fontSizes.lg};
-  color: ${({theme}) => theme.colors.onSurfaceVariant};
-  margin-left: ${({theme}) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  line-height: ${({ theme }) => theme.fontSizes.lg};
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 interface SourceTagProps {
@@ -24,7 +24,7 @@ interface SourceTagProps {
   onRefresh?: () => void;
 }
 
-export default function SourceTag({name, onRefresh}: SourceTagProps) {
+export default function SourceTag({ name, onRefresh }: SourceTagProps) {
   const spinValue = useRef(new Animated.Value(0)).current;
 
   const spin = spinValue.interpolate({
@@ -48,7 +48,9 @@ export default function SourceTag({name, onRefresh}: SourceTagProps) {
       <Name>{name}</Name>
       {onRefresh && (
         <Pressable onPress={handleRefresh} hitSlop={8}>
-          <RefreshIcon style={{transform: [{rotate: spin}]}}>{'\u21BB'}</RefreshIcon>
+          <RefreshIcon style={{ transform: [{ rotate: spin }] }}>
+            {'\u21BB'}
+          </RefreshIcon>
         </Pressable>
       )}
     </Row>

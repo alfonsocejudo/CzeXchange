@@ -1,19 +1,19 @@
-import React, {useState, useCallback} from 'react';
-import {Platform, Pressable, StyleSheet} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
 import DismissibleModal from '../components/organisms/DismissibleModal';
-import {useExchangeRates} from '../hooks/useExchangeRates';
-import {useSource} from '../context/SourceContext';
-import {useTargetCurrency} from '../context/TargetCurrencyContext';
-import {SOURCE_NAMES} from '../constants/sources';
+import { useExchangeRates } from '../hooks/useExchangeRates';
+import { useSource } from '../context/SourceContext';
+import { useTargetCurrency } from '../context/TargetCurrencyContext';
+import { SOURCE_NAMES } from '../constants/sources';
 
 export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
 const ModalOverlay = styled.View`
   flex: 1;
-  background-color: ${({theme}) => theme.colors.overlay};
+  background-color: ${({ theme }) => theme.colors.overlay};
   justify-content: flex-start;
   align-items: flex-end;
   padding-top: 50px;
@@ -21,36 +21,36 @@ const ModalOverlay = styled.View`
 `;
 
 const MenuCard = styled.View`
-  background-color: ${({theme}) => theme.colors.surfaceContainerHigh};
+  background-color: ${({ theme }) => theme.colors.surfaceContainerHigh};
   border-radius: 8px;
   overflow: hidden;
   min-width: 200px;
 `;
 
-const MenuOption = styled.TouchableOpacity<{selected: boolean}>`
+const MenuOption = styled.TouchableOpacity<{ selected: boolean }>`
   padding: 14px 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   border-bottom-width: 1px;
-  border-bottom-color: ${({theme}) => theme.colors.divider};
+  border-bottom-color: ${({ theme }) => theme.colors.divider};
 `;
 
-const MenuOptionText = styled.Text<{selected: boolean}>`
+const MenuOptionText = styled.Text<{ selected: boolean }>`
   font-size: 15px;
-  color: ${({selected, theme}) =>
+  color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : theme.colors.onSurface};
-  font-weight: ${({selected}) => (selected ? 'bold' : 'normal')};
+  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
 `;
 
 const CheckMark = styled.Text`
   font-size: 14px;
-  color: ${({theme}) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-left: 12px;
 `;
 
 const SortButtonWrap = styled.View`
-  background-color: ${({theme}) => theme.colors.embossBorder};
+  background-color: ${({ theme }) => theme.colors.embossBorder};
   border-width: 2px;
   border-color: #a0a0a0;
   border-radius: 8px;
@@ -58,27 +58,33 @@ const SortButtonWrap = styled.View`
   height: 40px;
   align-items: center;
   justify-content: center;
-  margin-right: ${({theme}) => theme.spacing.md};
+  margin-right: ${({ theme }) => theme.spacing.md};
 `;
 
 const SortIcon = styled.Text`
   font-size: 28px;
-  color: ${({theme}) => theme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   margin-top: -3px;
   margin-left: -1px;
 `;
 
-const SORT_OPTIONS: {key: SortMode; label: string}[] = [
-  {key: 'default', label: 'Default'},
-  {key: 'alphabetical', label: 'Alphabetical'},
-  {key: 'highest', label: 'Highest Rates'},
-  {key: 'lowest', label: 'Lowest Rates'},
+const SORT_OPTIONS: { key: SortMode; label: string }[] = [
+  { key: 'default', label: 'Default' },
+  { key: 'alphabetical', label: 'Alphabetical' },
+  { key: 'highest', label: 'Highest Rates' },
+  { key: 'lowest', label: 'Lowest Rates' },
 ];
 
-export default function ExchangeRatesScreen({navigation}: any) {
-  const {source} = useSource();
-  const {setTargetCode} = useTargetCurrency();
-  const {data: rates, isLoading, error, dataUpdatedAt, refetch} = useExchangeRates();
+export default function ExchangeRatesScreen({ navigation }: any) {
+  const { source } = useSource();
+  const { setTargetCode } = useTargetCurrency();
+  const {
+    data: rates,
+    isLoading,
+    error,
+    dataUpdatedAt,
+    refetch,
+  } = useExchangeRates();
   const [sortMode, setSortMode] = useState<SortMode>('default');
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -93,13 +99,17 @@ export default function ExchangeRatesScreen({navigation}: any) {
   const headerRight = useCallback(
     () => (
       <Pressable onPress={() => setMenuOpen(true)} hitSlop={8}>
-        {({pressed}) =>
+        {({ pressed }) =>
           Platform.OS === 'android' ? (
-            <SortButtonWrap style={pressed ? pressedStyles.androidButton : undefined}>
+            <SortButtonWrap
+              style={pressed ? pressedStyles.androidButton : undefined}
+            >
               <SortIcon>{'\u2195'}</SortIcon>
             </SortButtonWrap>
           ) : (
-            <SortIcon style={pressed ? pressedStyles.iosIcon : undefined}>{'\u2195'}</SortIcon>
+            <SortIcon style={pressed ? pressedStyles.iosIcon : undefined}>
+              {'\u2195'}
+            </SortIcon>
           )
         }
       </Pressable>
@@ -108,7 +118,7 @@ export default function ExchangeRatesScreen({navigation}: any) {
   );
 
   React.useLayoutEffect(() => {
-    navigation.setOptions({headerRight});
+    navigation.setOptions({ headerRight });
   }, [navigation, headerRight]);
 
   return (
@@ -128,14 +138,15 @@ export default function ExchangeRatesScreen({navigation}: any) {
         <ModalOverlay>
           <Pressable onPress={e => e.stopPropagation()}>
             <MenuCard>
-              {SORT_OPTIONS.map(({key, label}) => (
+              {SORT_OPTIONS.map(({ key, label }) => (
                 <MenuOption
                   key={key}
                   selected={sortMode === key}
                   onPress={() => {
                     setSortMode(key);
                     setMenuOpen(false);
-                  }}>
+                  }}
+                >
                   <MenuOptionText selected={sortMode === key}>
                     {label}
                   </MenuOptionText>
@@ -151,6 +162,6 @@ export default function ExchangeRatesScreen({navigation}: any) {
 }
 
 const pressedStyles = StyleSheet.create({
-  androidButton: {opacity: 0.6, backgroundColor: '#6b6565'},
-  iosIcon: {opacity: 0.5},
+  androidButton: { opacity: 0.6, backgroundColor: '#6b6565' },
+  iosIcon: { opacity: 0.5 },
 });

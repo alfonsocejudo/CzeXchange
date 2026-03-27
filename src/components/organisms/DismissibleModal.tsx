@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, Pressable, StyleSheet} from 'react-native';
+import { Modal, Pressable, StyleSheet } from 'react-native';
 
 interface DismissibleModalProps {
   visible: boolean;
@@ -7,9 +7,18 @@ interface DismissibleModalProps {
   children: React.ReactNode;
 }
 
-export default function DismissibleModal({visible, onClose, children}: DismissibleModalProps) {
+export default function DismissibleModal({
+  visible,
+  onClose,
+  children,
+}: DismissibleModalProps) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <Pressable style={styles.flex} onPress={onClose}>
         {children}
       </Pressable>
@@ -18,5 +27,5 @@ export default function DismissibleModal({visible, onClose, children}: Dismissib
 }
 
 const styles = StyleSheet.create({
-  flex: {flex: 1},
+  flex: { flex: 1 },
 });

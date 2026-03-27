@@ -1,4 +1,4 @@
-import {apiGet, ApiError} from '../client';
+import { apiGet, ApiError } from '../client';
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -23,9 +23,7 @@ it('throws ApiError on non-ok response', async () => {
     statusText: 'Not Found',
   } as Response);
 
-  await expect(apiGet('https://example.com/missing')).rejects.toThrow(
-    ApiError,
-  );
+  await expect(apiGet('https://example.com/missing')).rejects.toThrow(ApiError);
   await expect(apiGet('https://example.com/missing')).rejects.toMatchObject({
     status: 404,
     message: 'Request failed: 404 Not Found',

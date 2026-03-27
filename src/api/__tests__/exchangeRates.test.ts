@@ -1,4 +1,4 @@
-import {fetchExchangeRates} from '../exchangeRates';
+import { fetchExchangeRates } from '../exchangeRates';
 import * as client from '../client';
 
 const MOCK_CNB_RESPONSE = `27 Mar 2026 #61
@@ -57,8 +57,8 @@ describe('CNB source', () => {
 
     const rates = await fetchExchangeRates('cnb');
 
-    expect(rates[1]).toMatchObject({code: 'HUF', amount: 100});
-    expect(rates[2]).toMatchObject({code: 'IDR', amount: 1000});
+    expect(rates[1]).toMatchObject({ code: 'HUF', amount: 100 });
+    expect(rates[2]).toMatchObject({ code: 'IDR', amount: 1000 });
   });
 
   it('skips header lines', async () => {
@@ -91,7 +91,7 @@ describe('FloatRates source', () => {
 
     const rates = await fetchExchangeRates('floatrates');
 
-    expect(rates[1]).toMatchObject({country: 'EMU', code: 'EUR'});
+    expect(rates[1]).toMatchObject({ country: 'EMU', code: 'EUR' });
   });
 });
 
@@ -126,8 +126,8 @@ describe('ExchangeRate-API source', () => {
 
     const rates = await fetchExchangeRates('exchangerate-api');
 
-    expect(rates.find(r => r.code === 'USD')).toMatchObject({country: 'USA'});
-    expect(rates.find(r => r.code === 'EUR')).toMatchObject({country: 'EMU'});
+    expect(rates.find(r => r.code === 'USD')).toMatchObject({ country: 'USA' });
+    expect(rates.find(r => r.code === 'EUR')).toMatchObject({ country: 'EMU' });
   });
 });
 

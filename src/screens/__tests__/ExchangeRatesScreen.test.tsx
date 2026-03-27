@@ -1,25 +1,27 @@
 import React from 'react';
-import {render, screen, fireEvent} from '@testing-library/react-native';
-import {ThemeProvider} from 'styled-components/native';
-import {theme} from '../../theme';
-import {SourceProvider} from '../../context/SourceContext';
-import {TargetCurrencyProvider} from '../../context/TargetCurrencyContext';
+import { render, screen, fireEvent } from '@testing-library/react-native';
+import { ThemeProvider } from 'styled-components/native';
+import { theme } from '../../theme';
+import { SourceProvider } from '../../context/SourceContext';
+import { TargetCurrencyProvider } from '../../context/TargetCurrencyContext';
 import ExchangeRatesScreen from '../ExchangeRatesScreen';
 
 jest.mock('../../hooks/useExchangeRates');
 
-import {useExchangeRates} from '../../hooks/useExchangeRates';
+import { useExchangeRates } from '../../hooks/useExchangeRates';
 
 const mockUseExchangeRates = useExchangeRates as jest.MockedFunction<
   typeof useExchangeRates
 >;
 
-const mockNavigation = {setOptions: jest.fn()} as any;
+const mockNavigation = { setOptions: jest.fn() } as any;
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(
     <ThemeProvider theme={theme}>
-      <SourceProvider><TargetCurrencyProvider>{ui}</TargetCurrencyProvider></SourceProvider>
+      <SourceProvider>
+        <TargetCurrencyProvider>{ui}</TargetCurrencyProvider>
+      </SourceProvider>
     </ThemeProvider>,
   );
 }
@@ -51,8 +53,14 @@ it('shows an error message on failure', () => {
 it('renders currency rows when data is loaded', () => {
   mockUseExchangeRates.mockReturnValue({
     data: [
-      {country: 'USA', currency: 'dollar', amount: 1, code: 'USD', rate: 23.5},
-      {country: 'EMU', currency: 'euro', amount: 1, code: 'EUR', rate: 25.0},
+      {
+        country: 'USA',
+        currency: 'dollar',
+        amount: 1,
+        code: 'USD',
+        rate: 23.5,
+      },
+      { country: 'EMU', currency: 'euro', amount: 1, code: 'EUR', rate: 25.0 },
     ],
     isLoading: false,
     error: null,
@@ -66,11 +74,17 @@ it('renders currency rows when data is loaded', () => {
 
 it('navigates to Convert when a currency row is pressed', () => {
   const mockNavigate = jest.fn();
-  const nav = {setOptions: jest.fn(), navigate: mockNavigate} as any;
+  const nav = { setOptions: jest.fn(), navigate: mockNavigate } as any;
 
   mockUseExchangeRates.mockReturnValue({
     data: [
-      {country: 'USA', currency: 'dollar', amount: 1, code: 'USD', rate: 23.5},
+      {
+        country: 'USA',
+        currency: 'dollar',
+        amount: 1,
+        code: 'USD',
+        rate: 23.5,
+      },
     ],
     isLoading: false,
     error: null,

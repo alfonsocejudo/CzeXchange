@@ -1,5 +1,5 @@
-import {fetchExchangeRates} from '../exchangeRates';
-import {Source} from '../../types/exchangeRate';
+import { fetchExchangeRates } from '../exchangeRates';
+import { Source } from '../../types/exchangeRate';
 
 const sources: Source[] = ['cnb', 'floatrates', 'exchangerate-api'];
 

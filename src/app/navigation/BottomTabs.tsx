@@ -1,14 +1,20 @@
-import React, {useCallback, useMemo} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground, StyleSheet} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useTheme} from 'styled-components/native';
+import React, { useCallback, useMemo } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  ImageBackground,
+  StyleSheet,
+} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from 'styled-components/native';
 import ExchangeRatesScreen from '../../screens/ExchangeRatesScreen';
 import ConvertScreen from '../../screens/ConvertScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
-import {textShadowStyle} from '../../theme/textShadows';
-import {images} from '../../constants/assets';
+import { textShadowStyle } from '../../theme/textShadows';
+import { images } from '../../constants/assets';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,12 +24,12 @@ const TAB_LABELS: Record<string, string> = {
   Settings: 'SETTINGS',
 };
 
-function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
+function IndustrialTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
 
   return (
-    <View style={[styles.tabBar, {paddingBottom: insets.bottom + 12}]}>
+    <View style={[styles.tabBar, { paddingBottom: insets.bottom + 12 }]}>
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const label = TAB_LABELS[route.name] ?? route.name;
@@ -33,16 +39,23 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
             key={route.key}
             onPress={() => navigation.navigate(route.name)}
             activeOpacity={1}
-            style={styles.tabButtonOuter}>
+            style={styles.tabButtonOuter}
+          >
             <ImageBackground
               source={focused ? images.btnActive : images.btnInactive}
               style={styles.tabButtonImage}
-              resizeMode="stretch">
+              resizeMode="stretch"
+            >
               <Text
                 style={[
                   styles.tabLabel,
-                  {color: focused ? theme.colors.tabLabelActive : theme.colors.tabLabelInactive},
-                ]}>
+                  {
+                    color: focused
+                      ? theme.colors.tabLabelActive
+                      : theme.colors.tabLabelInactive,
+                  },
+                ]}
+              >
                 {label}
               </Text>
             </ImageBackground>
@@ -53,22 +66,33 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   );
 }
 
-function HeaderTitle({children, style}: {children: React.ReactNode; style: object}) {
+function HeaderTitle({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style: object;
+}) {
   return (
-    <Text style={style}>{typeof children === 'string' ? children.toUpperCase() : ''}</Text>
+    <Text style={style}>
+      {typeof children === 'string' ? children.toUpperCase() : ''}
+    </Text>
   );
 }
 
 export default function BottomTabs() {
   const theme = useTheme();
 
-  const headerTitleStyle = useMemo(() => ({
-    fontWeight: '800' as const,
-    fontSize: 13,
-    letterSpacing: 3,
-    color: theme.colors.embossedText,
-    ...textShadowStyle(theme.textShadows.embossed),
-  }), [theme]);
+  const headerTitleStyle = useMemo(
+    () => ({
+      fontWeight: '800' as const,
+      fontSize: 13,
+      letterSpacing: 3,
+      color: theme.colors.embossedText,
+      ...textShadowStyle(theme.textShadows.embossed),
+    }),
+    [theme],
+  );
 
   const renderTabBar = useCallback(
     (props: BottomTabBarProps) => <IndustrialTabBar {...props} />,
@@ -76,7 +100,7 @@ export default function BottomTabs() {
   );
 
   const renderHeaderTitle = useCallback(
-    ({children}: {children: React.ReactNode}) => (
+    ({ children }: { children: React.ReactNode }) => (
       <HeaderTitle style={headerTitleStyle}>{children}</HeaderTitle>
     ),
     [headerTitleStyle],
@@ -87,15 +111,19 @@ export default function BottomTabs() {
       <Tab.Navigator
         tabBar={renderTabBar}
         screenOptions={{
-          headerStyle: {backgroundColor: 'transparent', shadowColor: 'transparent'},
+          headerStyle: {
+            backgroundColor: 'transparent',
+            shadowColor: 'transparent',
+          },
           headerTintColor: theme.colors.embossedText,
           headerTitle: renderHeaderTitle,
-          sceneStyle: {backgroundColor: 'transparent'},
-        }}>
+          sceneStyle: { backgroundColor: 'transparent' },
+        }}
+      >
         <Tab.Screen
           name="ExchangeRates"
           component={ExchangeRatesScreen}
-          options={{title: 'Exchange Rates'}}
+          options={{ title: 'Exchange Rates' }}
         />
         <Tab.Screen name="Convert" component={ConvertScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

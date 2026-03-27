@@ -1,4 +1,4 @@
-import {Source} from '../types/exchangeRate';
+import { Source } from '../types/exchangeRate';
 
 export const SOURCE_NAMES: Record<Source, string> = {
   cnb: 'Czech National Bank',

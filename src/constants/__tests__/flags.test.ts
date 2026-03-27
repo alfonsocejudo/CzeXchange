@@ -1,4 +1,4 @@
-import {getCurrencyFlag} from '../flags';
+import { getCurrencyFlag } from '../flags';
 
 it('returns a flag emoji for a known currency', () => {
   const flag = getCurrencyFlag('USD');

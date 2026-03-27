@@ -1,6 +1,6 @@
-import {ExchangeRate, Source} from '../types/exchangeRate';
-import {COUNTRY_MAP} from '../constants/currencies';
-import {apiGet} from './client';
+import { ExchangeRate, Source } from '../types/exchangeRate';
+import { COUNTRY_MAP } from '../constants/currencies';
+import { apiGet } from './client';
 
 // CNB returns pipe-delimited text with a variable amount per currency (1, 100, or 1000).
 // Rates are already in CZK per X units of foreign currency.
@@ -35,7 +35,10 @@ async function fetchFromFloatRates(): Promise<ExchangeRate[]> {
     const code = entry.code.toUpperCase();
     return {
       country: COUNTRY_MAP[code] ?? '',
-      currency: (typeof entry.name === 'string' ? entry.name.split('/')[1]?.trim() : undefined) ?? entry.code,
+      currency:
+        (typeof entry.name === 'string'
+          ? entry.name.split('/')[1]?.trim()
+          : undefined) ?? entry.code,
       amount: 1,
       code,
       rate: entry.inverseRate,
