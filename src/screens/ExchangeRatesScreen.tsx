@@ -1,13 +1,19 @@
 import React from 'react';
 import AppScreen from '../components/templates/AppScreen';
-import Title from '../components/atoms/Title';
-import Subtitle from '../components/atoms/Subtitle';
+import ExchangeBoard from '../components/organisms/ExchangeBoard';
+import {useExchangeRates} from '../hooks/useExchangeRates';
 
 export default function ExchangeRatesScreen() {
+  const {data: rates, isLoading, error, dataUpdatedAt} = useExchangeRates();
+
   return (
     <AppScreen>
-      <Title>Exchange Rates</Title>
-      <Subtitle>Live rates will appear here</Subtitle>
+      <ExchangeBoard
+        rates={rates ?? []}
+        isLoading={isLoading}
+        error={error}
+        updatedAt={dataUpdatedAt}
+      />
     </AppScreen>
   );
 }
