@@ -131,6 +131,42 @@ describe('ExchangeRate-API source', () => {
   });
 });
 
+describe('validation', () => {
+  it('rejects empty response', async () => {
+    jest.spyOn(client, 'apiGet').mockResolvedValue(`27 Mar 2026 #61
+Country|Currency|Amount|Code|Rate`);
+
+    await expect(fetchExchangeRates('cnb')).rejects.toThrow(
+      'response contained no exchange rates',
+    );
+  });
+
+  it('rejects invalid rate', async () => {
+    jest.spyOn(client, 'apiGet').mockResolvedValue(`27 Mar 2026 #61
+Country|Currency|Amount|Code|Rate
+Australia|dollar|1|AUD|abc`);
+
+    await expect(fetchExchangeRates('cnb')).rejects.toThrow(
+      'invalid rate for AUD',
+    );
+  });
+
+  it('rejects missing currency code', async () => {
+    jest.spyOn(client, 'apiGet').mockResolvedValue(
+      JSON.stringify({
+        rates: {
+          CZK: 1,
+          '': 0.04692,
+        },
+      }),
+    );
+
+    await expect(fetchExchangeRates('exchangerate-api')).rejects.toThrow(
+      'missing or invalid currency code',
+    );
+  });
+});
+
 it('propagates API errors', async () => {
   jest
     .spyOn(client, 'apiGet')

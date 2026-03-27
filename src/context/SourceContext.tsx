@@ -1,5 +1,5 @@
-import React, {createContext, useContext, useState} from 'react';
-import {Source} from '../types/exchangeRate';
+import React, { createContext, useContext, useState } from 'react';
+import { Source } from '../types/exchangeRate';
 
 interface SourceContextValue {
   source: Source;
@@ -8,11 +8,12 @@ interface SourceContextValue {
 
 const SourceContext = createContext<SourceContextValue | undefined>(undefined);
 
-export function SourceProvider({children}: {children: React.ReactNode}) {
+export function SourceProvider({ children }: { children: React.ReactNode }) {
+  // We can use AsyncStorage to persist in a real production app
   const [source, setSource] = useState<Source>('cnb');
 
   return (
-    <SourceContext.Provider value={{source, setSource}}>
+    <SourceContext.Provider value={{ source, setSource }}>
       {children}
     </SourceContext.Provider>
   );

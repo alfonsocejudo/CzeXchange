@@ -61,12 +61,35 @@ async function fetchFromExchangeRateApi(): Promise<ExchangeRate[]> {
     }));
 }
 
+function validate(rates: ExchangeRate[], source: Source): ExchangeRate[] {
+  if (rates.length === 0) {
+    throw new Error(`${source}: response contained no exchange rates`);
+  }
+
+  for (const rate of rates) {
+    if (typeof rate.code !== 'string' || rate.code.length === 0) {
+      throw new Error(`${source}: missing or invalid currency code`);
+    }
+    if (!Number.isFinite(rate.rate) || rate.rate <= 0) {
+      throw new Error(`${source}: invalid rate for ${rate.code}`);
+    }
+    if (!Number.isFinite(rate.amount) || rate.amount <= 0) {
+      throw new Error(`${source}: invalid amount for ${rate.code}`);
+    }
+  }
+
+  return rates;
+}
+
 const fetchers: Record<Source, () => Promise<ExchangeRate[]>> = {
   cnb: fetchFromCnb,
   floatrates: fetchFromFloatRates,
   'exchangerate-api': fetchFromExchangeRateApi,
 };
 
-export function fetchExchangeRates(source: Source): Promise<ExchangeRate[]> {
-  return fetchers[source]();
+export async function fetchExchangeRates(
+  source: Source,
+): Promise<ExchangeRate[]> {
+  const rates = await fetchers[source]();
+  return validate(rates, source);
 }
