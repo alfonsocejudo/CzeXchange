@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {FlatList, ActivityIndicator} from 'react-native';
 import styled from 'styled-components/native';
 import {ExchangeRate} from '../../types/exchangeRate';
 import CurrencyRow from '../molecules/CurrencyRow';
+import {getCurrencyFlag} from '../../constants/flags';
+import type {SortMode} from '../../screens/ExchangeRatesScreen';
 
 const BoardEmboss = styled.View`
   flex: 1;
@@ -118,6 +120,30 @@ interface ExchangeBoardProps {
   isLoading: boolean;
   error: Error | null;
   updatedAt?: number;
+  sortMode?: SortMode;
+}
+
+function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
+  const sorted = [...rates];
+  switch (mode) {
+    case 'alphabetical':
+      sorted.sort((a, b) => a.code.localeCompare(b.code));
+      break;
+    case 'highest':
+      sorted.sort((a, b) => b.rate / b.amount - a.rate / a.amount);
+      break;
+    case 'lowest':
+      sorted.sort((a, b) => a.rate / a.amount - b.rate / b.amount);
+      break;
+    default:
+      sorted.sort((a, b) => {
+        const aFlag = getCurrencyFlag(a.code) ? 0 : 1;
+        const bFlag = getCurrencyFlag(b.code) ? 0 : 1;
+        return aFlag - bFlag;
+      });
+      break;
+  }
+  return sorted;
 }
 
 function formatTimestamp(ms?: number): string {
@@ -134,7 +160,9 @@ export default function ExchangeBoard({
   isLoading,
   error,
   updatedAt,
+  sortMode = 'default',
 }: ExchangeBoardProps) {
+  const sortedRates = useMemo(() => sortRates(rates, sortMode), [rates, sortMode]);
   if (isLoading) {
     return (
       <BoardEmboss><BoardWrapper>
@@ -184,7 +212,7 @@ export default function ExchangeBoard({
             </RateColumn>
           </ColumnHeaders>
           <FlatList
-            data={rates}
+            data={sortedRates}
             keyExtractor={item => item.code}
             renderItem={({item}) => <CurrencyRow rate={item} />}
             indicatorStyle="white"

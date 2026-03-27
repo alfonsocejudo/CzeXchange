@@ -12,6 +12,8 @@ const mockUseExchangeRates = useExchangeRates as jest.MockedFunction<
   typeof useExchangeRates
 >;
 
+const mockNavigation = {setOptions: jest.fn()} as any;
+
 function renderWithTheme(ui: React.ReactElement) {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 }
@@ -24,7 +26,7 @@ it('shows an error message on failure', () => {
     dataUpdatedAt: 0,
   } as any);
 
-  renderWithTheme(<ExchangeRatesScreen />);
+  renderWithTheme(<ExchangeRatesScreen navigation={mockNavigation} />);
   expect(screen.getByText('Failed to load rates')).toBeTruthy();
 });
 
@@ -39,7 +41,7 @@ it('renders currency rows when data is loaded', () => {
     dataUpdatedAt: Date.now(),
   } as any);
 
-  renderWithTheme(<ExchangeRatesScreen />);
+  renderWithTheme(<ExchangeRatesScreen navigation={mockNavigation} />);
   expect(screen.getByText('USD')).toBeTruthy();
   expect(screen.getByText('EUR')).toBeTruthy();
 });
