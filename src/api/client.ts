@@ -1,5 +1,3 @@
-const BASE_URL = 'https://www.cnb.cz/en';
-
 class ApiError extends Error {
   constructor(
     public status: number,
@@ -10,8 +8,8 @@ class ApiError extends Error {
   }
 }
 
-export async function apiGet(path: string): Promise<string> {
-  const response = await fetch(`${BASE_URL}${path}`);
+export async function apiGet(url: string): Promise<string> {
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new ApiError(

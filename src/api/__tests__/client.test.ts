@@ -10,10 +10,10 @@ it('returns response text on success', async () => {
     text: () => Promise.resolve('response body'),
   } as Response);
 
-  const result = await apiGet('/test');
+  const result = await apiGet('https://example.com/test');
 
   expect(result).toBe('response body');
-  expect(fetch).toHaveBeenCalledWith('https://www.cnb.cz/en/test');
+  expect(fetch).toHaveBeenCalledWith('https://example.com/test');
 });
 
 it('throws ApiError on non-ok response', async () => {
@@ -23,8 +23,10 @@ it('throws ApiError on non-ok response', async () => {
     statusText: 'Not Found',
   } as Response);
 
-  await expect(apiGet('/missing')).rejects.toThrow(ApiError);
-  await expect(apiGet('/missing')).rejects.toMatchObject({
+  await expect(apiGet('https://example.com/missing')).rejects.toThrow(
+    ApiError,
+  );
+  await expect(apiGet('https://example.com/missing')).rejects.toMatchObject({
     status: 404,
     message: 'Request failed: 404 Not Found',
   });
@@ -33,5 +35,7 @@ it('throws ApiError on non-ok response', async () => {
 it('throws on network failure', async () => {
   jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
 
-  await expect(apiGet('/test')).rejects.toThrow('Network error');
+  await expect(apiGet('https://example.com/test')).rejects.toThrow(
+    'Network error',
+  );
 });
