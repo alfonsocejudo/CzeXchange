@@ -1,5 +1,4 @@
-export const theme = {
-  colors: {
+const colors = {
     // Surfaces
     background: '#131313',
     surface: '#131313',
@@ -45,6 +44,16 @@ export const theme = {
 
     // Borders / Outlines
     outlineVariant: '#49454f',
+  };
+
+export const theme = {
+  colors,
+  textShadows: {
+    primaryGlow: {color: colors.primaryGlow, offsetY: 0, radius: 6},
+    primaryGlowSubtle: {color: colors.primaryGlow, offsetY: 0, radius: 4},
+    successGlow: {color: colors.successGlow, offsetY: 0, radius: 10},
+    embossed: {color: colors.embossedHighlight, offsetY: 1, radius: 0},
+    embossedStrong: {color: colors.embossedHighlight, offsetY: 2, radius: 0},
   },
   fontSizes: {
     xxs: '11px',

@@ -1,5 +1,6 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {
+  Text,
   TextInput,
   ImageBackground,
   Keyboard,
@@ -20,7 +21,7 @@ import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {SOURCE_NAMES} from '../constants/sources';
 import {useCurrencyFormatter} from '../hooks/useCurrencyFormatter';
-import {successGlowShadow, embossedShadow, primaryGlowStyle} from '../theme/mixins';
+import {textShadow, textShadowStyle} from '../theme/textShadows';
 import {images} from '../constants/assets';
 
 const InputWell = styled.View`
@@ -74,7 +75,7 @@ const ResultText = styled.Text`
   font-size: 48px;
   font-weight: bold;
   color: ${({theme}) => theme.colors.success};
-  ${successGlowShadow}
+  ${textShadow('successGlow')}
 `;
 
 const ResultLabel = styled(Label)<{stale?: boolean}>`
@@ -88,11 +89,6 @@ const ConvertButtonWrapper = styled.View`
   margin-top: ${({theme}) => theme.spacing.lg};
 `;
 
-const ConvertButtonLabel = styled.Text`
-  font-size: 64px;
-  color: ${({theme}) => theme.colors.embossedText};
-  ${embossedShadow(2)}
-`;
 
 export default function ConvertScreen() {
   const themeColors = useTheme();
@@ -100,13 +96,22 @@ export default function ConvertScreen() {
   const {data: rates, isLoading, error} = useExchangeRates();
   const {formatAmount, formatResult, stripGrouping} = useCurrencyFormatter();
 
+  const convertIconStyle = useMemo(() => ({
+    fontSize: 64,
+    color: themeColors.colors.embossedText,
+    includeFontPadding: false,
+    textAlignVertical: 'center' as const,
+    textAlign: 'center' as const,
+    ...textShadowStyle(themeColors.textShadows.embossedStrong),
+  }), [themeColors]);
+
   const amountInputStyle = useMemo(() => ({
     fontSize: 36,
     fontWeight: 'bold' as const,
     color: themeColors.colors.primary,
     textAlign: 'center' as const,
     padding: 0,
-    ...primaryGlowStyle(themeColors),
+    ...textShadowStyle(themeColors.textShadows.primaryGlow),
   }), [themeColors]);
   const [amount, setAmount] = useState('1000');
   const [targetCode, setTargetCode] = useState('EUR');
@@ -228,9 +233,9 @@ export default function ConvertScreen() {
               source={pressed ? images.btnConvertPressed : images.btnConvert}
               style={styles.convertButton}
               resizeMode="stretch">
-              <Animated.View style={[styles.iconContainer, {transform: [{rotate: spin}]}]}>
-                <ConvertButtonLabel>{'\u21BB'}</ConvertButtonLabel>
-              </Animated.View>
+              <Animated.Text style={[convertIconStyle, {transform: [{rotate: spin}]}]}>
+                {'\u21BB'}
+              </Animated.Text>
             </ImageBackground>
           )}
         </Pressable>
@@ -243,12 +248,6 @@ export default function ConvertScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   convertButton: {
     width: 160,

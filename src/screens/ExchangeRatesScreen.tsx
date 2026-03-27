@@ -7,7 +7,7 @@ import DismissibleModal from '../components/molecules/DismissibleModal';
 import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {SOURCE_NAMES} from '../constants/sources';
-import {embossedShadow} from '../theme/mixins';
+import {textShadow} from '../theme/textShadows';
 
 export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
@@ -50,10 +50,10 @@ const CheckMark = styled.Text`
 `;
 
 const SortButton = styled.Text`
-  font-size: 18px;
+  font-size: 28px;
   color: ${({theme}) => theme.colors.embossedText};
   padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.sm};
-  ${embossedShadow()}
+  ${textShadow('embossed')}
 `;
 
 const SORT_OPTIONS: {key: SortMode; label: string}[] = [

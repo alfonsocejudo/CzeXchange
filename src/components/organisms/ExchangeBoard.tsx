@@ -8,7 +8,7 @@ import Label from '../atoms/Label';
 import {LoadingState, ErrorState} from '../molecules/LoadingErrorState';
 import SourceTag from '../molecules/SourceTag';
 import {getCurrencyFlag} from '../../constants/flags';
-import {primaryGlowShadow} from '../../theme/mixins';
+import {textShadow} from '../../theme/textShadows';
 import {useSearchFilter} from '../../hooks/useSearchFilter';
 import type {SortMode} from '../../screens/ExchangeRatesScreen';
 
@@ -32,7 +32,7 @@ const TimestampText = styled.Text`
   color: ${({theme}) => theme.colors.primary};
   font-weight: bold;
   margin-left: ${({theme}) => theme.spacing.sm};
-  ${primaryGlowShadow(4)}
+  ${textShadow('primaryGlowSubtle')}
 `;
 
 const ColumnHeaders = styled.View`

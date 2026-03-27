@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, Text, ImageBackground, Platform, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -7,7 +7,7 @@ import {useTheme} from 'styled-components/native';
 import ExchangeRatesScreen from '../../screens/ExchangeRatesScreen';
 import ConvertScreen from '../../screens/ConvertScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
-import {embossedShadowStyle} from '../../theme/mixins';
+import {textShadowStyle} from '../../theme/textShadows';
 import {images} from '../../constants/assets';
 
 const Tab = createBottomTabNavigator();
@@ -23,7 +23,7 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   const theme = useTheme();
 
   return (
-    <View style={[styles.tabBar, {paddingBottom: Math.max(insets.bottom, 12)}]}>
+    <View style={[styles.tabBar, {paddingBottom: insets.bottom + 12}]}>
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const label = TAB_LABELS[route.name] ?? route.name;
@@ -61,7 +61,7 @@ export default function BottomTabs() {
     fontSize: 13,
     letterSpacing: 3,
     color: theme.colors.embossedText,
-    ...embossedShadowStyle(theme),
+    ...textShadowStyle(theme.textShadows.embossed),
   }), [theme]);
 
   return (
