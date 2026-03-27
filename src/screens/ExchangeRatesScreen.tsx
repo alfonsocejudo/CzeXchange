@@ -3,7 +3,7 @@ import {Platform, Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
-import DismissibleModal from '../components/molecules/DismissibleModal';
+import DismissibleModal from '../components/organisms/DismissibleModal';
 import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {useTargetCurrency} from '../context/TargetCurrencyContext';

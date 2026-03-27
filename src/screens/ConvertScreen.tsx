@@ -13,7 +13,7 @@ import CurrencyInput, {formatNumber} from 'react-native-currency-input';
 import styled, {useTheme} from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import GlassPanel from '../components/organisms/GlassPanel';
-import PickerModal from '../components/molecules/PickerModal';
+import PickerModal from '../components/organisms/PickerModal';
 import Label from '../components/atoms/Label';
 import SlotText from '../components/atoms/SlotText';
 import SourceTag from '../components/molecules/SourceTag';
