@@ -4,4 +4,5 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(@react-native|react-native|@react-navigation|@tanstack/react-query|styled-components)/)',
   ],
+  setupFiles: ['./jest.setup.js'],
 };

@@ -37,7 +37,7 @@ beforeEach(() => {
 
 it('renders the amount input with default value', () => {
   renderWithTheme(<ConvertScreen />);
-  expect(screen.getByDisplayValue('1000')).toBeTruthy();
+  expect(screen.getByDisplayValue('1,000')).toBeTruthy();
 });
 
 it('renders the target currency label', () => {

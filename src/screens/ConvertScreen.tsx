@@ -19,6 +19,7 @@ import {LoadingState, ErrorState} from '../components/molecules/LoadingErrorStat
 import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {SOURCE_NAMES} from '../constants/sources';
+import {useCurrencyFormatter} from '../hooks/useCurrencyFormatter';
 import {successGlowShadow, embossedShadow, primaryGlowStyle} from '../theme/mixins';
 import {images} from '../constants/assets';
 
@@ -97,6 +98,7 @@ export default function ConvertScreen() {
   const themeColors = useTheme();
   const {source} = useSource();
   const {data: rates, isLoading, error} = useExchangeRates();
+  const {formatAmount, formatResult, stripGrouping} = useCurrencyFormatter();
 
   const amountInputStyle = useMemo(() => ({
     fontSize: 36,
@@ -144,7 +146,7 @@ export default function ConvertScreen() {
       return;
     }
     const converted = numAmount / (rate.rate / rate.amount);
-    setResult(converted.toFixed(2));
+    setResult(formatResult(converted));
     setResultCode(targetCode);
     setSlotTrigger(prev => prev + 1);
   };
@@ -177,8 +179,8 @@ export default function ConvertScreen() {
             <InputWell>
               <TextInput
                 style={amountInputStyle}
-                value={amount}
-                onChangeText={setAmount}
+                value={formatAmount(amount)}
+                onChangeText={text => setAmount(stripGrouping(text))}
                 keyboardType="numeric"
                 placeholderTextColor={themeColors.colors.textDisabled}
                 placeholder="0"
