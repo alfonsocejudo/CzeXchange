@@ -6,6 +6,7 @@ import {
   Pressable,
   Animated,
   Easing,
+  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import styled, {useTheme} from 'styled-components/native';
@@ -78,6 +79,17 @@ const ResultLabel = styled(Label)<{stale?: boolean}>`
     stale ? theme.colors.primaryContainer : theme.colors.onSurfaceVariant};
 `;
 
+const CenteredContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ErrorText = styled.Text`
+  font-size: ${({theme}) => theme.fontSizes.sm};
+  color: ${({theme}) => theme.colors.primaryContainer};
+`;
+
 const ConvertButtonWrapper = styled.View`
   align-items: center;
   margin-top: ${({theme}) => theme.spacing.lg};
@@ -97,7 +109,7 @@ const btnConvertPressed = require('../assets/images/btn_convert_pressed.png');
 
 export default function ConvertScreen() {
   const themeColors = useTheme();
-  const {data: rates} = useExchangeRates();
+  const {data: rates, isLoading, error} = useExchangeRates();
 
   const amountInputStyle = useMemo(() => ({
     fontSize: 36,
@@ -152,10 +164,34 @@ export default function ConvertScreen() {
     setSlotTrigger(prev => prev + 1);
   };
 
+  if (isLoading) {
+    return (
+      <AppScreen>
+        <GlassPanel>
+          <CenteredContainer>
+            <ActivityIndicator color={themeColors.colors.primary} size="large" />
+          </CenteredContainer>
+        </GlassPanel>
+      </AppScreen>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppScreen>
+        <GlassPanel>
+          <CenteredContainer>
+            <ErrorText>Failed to load rates</ErrorText>
+          </CenteredContainer>
+        </GlassPanel>
+      </AppScreen>
+    );
+  }
+
   return (
     <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
     <AppScreen>
-      <GlassPanel>
+      <GlassPanel expand={false}>
             <InputWell>
               <TextInput
                 style={amountInputStyle}

@@ -4,6 +4,8 @@ import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
 import {useExchangeRates} from '../hooks/useExchangeRates';
+import {useSource} from '../context/SourceContext';
+import {SOURCE_NAMES} from '../constants/sources';
 
 export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
@@ -46,10 +48,8 @@ const CheckMark = styled.Text`
 `;
 
 const SortButton = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.xxs};
-  font-weight: 800;
+  font-size: 18px;
   color: ${({theme}) => theme.colors.embossedText};
-  letter-spacing: 2px;
   padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.sm};
   text-shadow-color: ${({theme}) => theme.colors.embossedHighlight};
   text-shadow-offset: 0px 1px;
@@ -64,14 +64,15 @@ const SORT_OPTIONS: {key: SortMode; label: string}[] = [
 ];
 
 export default function ExchangeRatesScreen({navigation}: any) {
-  const {data: rates, isLoading, error, dataUpdatedAt} = useExchangeRates();
+  const {source} = useSource();
+  const {data: rates, isLoading, error, dataUpdatedAt, refetch} = useExchangeRates();
   const [sortMode, setSortMode] = useState<SortMode>('default');
   const [menuOpen, setMenuOpen] = useState(false);
 
   const headerRight = useCallback(
     () => (
       <Pressable onPress={() => setMenuOpen(true)} hitSlop={8}>
-        <SortButton>SORT</SortButton>
+        <SortButton>{'\u2195'}</SortButton>
       </Pressable>
     ),
     [],
@@ -89,6 +90,8 @@ export default function ExchangeRatesScreen({navigation}: any) {
         error={error}
         updatedAt={dataUpdatedAt}
         sortMode={sortMode}
+        sourceName={SOURCE_NAMES[source]}
+        onRefresh={refetch}
       />
 
       <Modal

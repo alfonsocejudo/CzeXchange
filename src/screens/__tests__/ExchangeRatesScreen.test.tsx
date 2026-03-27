@@ -2,6 +2,7 @@ import React from 'react';
 import {render, screen} from '@testing-library/react-native';
 import {ThemeProvider} from 'styled-components/native';
 import {theme} from '../../theme';
+import {SourceProvider} from '../../context/SourceContext';
 import ExchangeRatesScreen from '../ExchangeRatesScreen';
 
 jest.mock('../../hooks/useExchangeRates');
@@ -14,8 +15,12 @@ const mockUseExchangeRates = useExchangeRates as jest.MockedFunction<
 
 const mockNavigation = {setOptions: jest.fn()} as any;
 
-function renderWithTheme(ui: React.ReactElement) {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+function renderWithProviders(ui: React.ReactElement) {
+  return render(
+    <ThemeProvider theme={theme}>
+      <SourceProvider>{ui}</SourceProvider>
+    </ThemeProvider>,
+  );
 }
 
 it('shows an error message on failure', () => {
@@ -26,7 +31,7 @@ it('shows an error message on failure', () => {
     dataUpdatedAt: 0,
   } as any);
 
-  renderWithTheme(<ExchangeRatesScreen navigation={mockNavigation} />);
+  renderWithProviders(<ExchangeRatesScreen navigation={mockNavigation} />);
   expect(screen.getByText('Failed to load rates')).toBeTruthy();
 });
 
@@ -41,7 +46,7 @@ it('renders currency rows when data is loaded', () => {
     dataUpdatedAt: Date.now(),
   } as any);
 
-  renderWithTheme(<ExchangeRatesScreen navigation={mockNavigation} />);
+  renderWithProviders(<ExchangeRatesScreen navigation={mockNavigation} />);
   expect(screen.getByText('USD')).toBeTruthy();
   expect(screen.getByText('EUR')).toBeTruthy();
 });

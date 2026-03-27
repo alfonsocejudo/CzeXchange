@@ -5,7 +5,9 @@ import AppScreen from '../components/templates/AppScreen';
 import GlassPanel from '../components/organisms/GlassPanel';
 import Label from '../components/atoms/Label';
 import {useSource} from '../context/SourceContext';
-import {Source} from '../types/exchangeRate';
+import {SOURCE_NAMES} from '../constants/sources';
+
+const version = require('../../package.json').version;
 
 const SectionLabel = styled(Label)`
   margin-bottom: ${({theme}) => theme.spacing.md};
@@ -49,11 +51,19 @@ const OptionText = styled.Text<{selected: boolean}>`
   font-weight: ${({selected}) => (selected ? 'bold' : 'normal')};
 `;
 
-const sources: {key: Source; label: string}[] = [
-  {key: 'cnb', label: 'Czech National Bank'},
-  {key: 'floatrates', label: 'FloatRates'},
-  {key: 'exchangerate-api', label: 'ExchangeRate-API'},
-];
+const VersionText = styled.Text`
+  font-size: ${({theme}) => theme.fontSizes.md};
+  color: ${({theme}) => theme.colors.onSurface};
+`;
+
+const Spacer = styled.View`
+  height: ${({theme}) => theme.spacing.lg};
+`;
+
+const sources = Object.entries(SOURCE_NAMES).map(([key, label]) => ({
+  key: key as keyof typeof SOURCE_NAMES,
+  label,
+}));
 
 export default function SettingsScreen() {
   const {source, setSource} = useSource();
@@ -72,6 +82,9 @@ export default function SettingsScreen() {
                 </Option>
               </Pressable>
             ))}
+            <Spacer />
+            <SectionLabel>App Version</SectionLabel>
+            <VersionText>{version}</VersionText>
       </GlassPanel>
     </AppScreen>
   );
