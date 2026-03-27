@@ -61,11 +61,13 @@ const SortButtonWrap = styled.View`
   margin-right: ${({ theme }) => theme.spacing.md};
 `;
 
-const SortIcon = styled.Text`
+const SortIcon = styled.Text<{ standalone?: boolean }>`
   font-size: 28px;
   color: ${({ theme }) => theme.colors.onSurface};
   margin-top: -3px;
   margin-left: -1px;
+  ${({ standalone, theme }) =>
+    standalone ? `margin-right: ${theme.spacing.md}` : ''};
 `;
 
 const SORT_OPTIONS: { key: SortMode; label: string }[] = [
@@ -107,7 +109,10 @@ export default function ExchangeRatesScreen({ navigation }: any) {
               <SortIcon>{'\u2195'}</SortIcon>
             </SortButtonWrap>
           ) : (
-            <SortIcon style={pressed ? pressedStyles.iosIcon : undefined}>
+            <SortIcon
+              standalone
+              style={pressed ? pressedStyles.iosIcon : undefined}
+            >
               {'\u2195'}
             </SortIcon>
           )
