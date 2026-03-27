@@ -72,7 +72,7 @@ export default function BottomTabs() {
           headerStyle: {backgroundColor: 'transparent', shadowColor: 'transparent'},
           headerTintColor: theme.colors.embossedText,
           headerTitle: ({children}) => (
-            <Text style={headerTitleStyle}>{(children as string).toUpperCase()}</Text>
+            <Text style={headerTitleStyle}>{typeof children === 'string' ? children.toUpperCase() : ''}</Text>
           ),
           sceneStyle: {backgroundColor: 'transparent'},
         }}>

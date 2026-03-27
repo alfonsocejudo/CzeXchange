@@ -57,7 +57,7 @@ const CurrencyColumn = styled.View`
 const SearchIcon = styled.Text`
   font-size: ${({theme}) => theme.fontSizes.sm};
   color: ${({theme}) => theme.colors.onSurfaceVariant};
-  margin-left: ${({theme}) => theme.spacing.xs};
+  margin-left: ${({theme}) => theme.spacing.sm};
 `;
 
 const SearchInput = styled.TextInput`
@@ -93,10 +93,10 @@ function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
       sorted.sort((a, b) => a.code.localeCompare(b.code));
       break;
     case 'highest':
-      sorted.sort((a, b) => b.rate / b.amount - a.rate / a.amount);
+      sorted.sort((a, b) => (b.amount ? b.rate / b.amount : 0) - (a.amount ? a.rate / a.amount : 0));
       break;
     case 'lowest':
-      sorted.sort((a, b) => a.rate / a.amount - b.rate / b.amount);
+      sorted.sort((a, b) => (a.amount ? a.rate / a.amount : 0) - (b.amount ? b.rate / b.amount : 0));
       break;
     default:
       sorted.sort((a, b) => {
@@ -142,6 +142,11 @@ export default function ExchangeBoard({
   );
   const {query: searchQuery, setQuery: setSearchQuery, filtered: filteredRates} =
     useSearchFilter(sortedRates, matchRate);
+
+  const renderCurrencyRow = useCallback(
+    ({item}: {item: ExchangeRate}) => <CurrencyRow rate={item} onPress={onCurrencyPress} />,
+    [onCurrencyPress],
+  );
 
   if (isLoading) {
     return (
@@ -197,7 +202,7 @@ export default function ExchangeBoard({
       <FlatList
         data={filteredRates}
         keyExtractor={item => item.code}
-        renderItem={({item}) => <CurrencyRow rate={item} onPress={onCurrencyPress} />}
+        renderItem={renderCurrencyRow}
         indicatorStyle="white"
       />
     </GlassPanel>

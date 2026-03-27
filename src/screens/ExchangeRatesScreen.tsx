@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {Pressable} from 'react-native';
+import {Platform, Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
@@ -50,11 +50,23 @@ const CheckMark = styled.Text`
   margin-left: 12px;
 `;
 
-const SortButton = styled.Text`
+const SortButtonWrap = styled.View`
+  background-color: ${({theme}) => theme.colors.embossBorder};
+  border-width: 2px;
+  border-color: #a0a0a0;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-right: ${({theme}) => theme.spacing.md};
+`;
+
+const SortIcon = styled.Text`
   font-size: 28px;
-  color: ${({theme}) => theme.colors.embossedText};
-  padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.sm};
-  ${textShadow('embossed')}
+  color: ${({theme}) => theme.colors.onSurface};
+  margin-top: -3px;
+  margin-left: -1px;
 `;
 
 const SORT_OPTIONS: {key: SortMode; label: string}[] = [
@@ -71,10 +83,26 @@ export default function ExchangeRatesScreen({navigation}: any) {
   const [sortMode, setSortMode] = useState<SortMode>('default');
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const handleCurrencyPress = useCallback(
+    (code: string) => {
+      setTargetCode(code);
+      navigation.navigate('Convert');
+    },
+    [setTargetCode, navigation],
+  );
+
   const headerRight = useCallback(
     () => (
       <Pressable onPress={() => setMenuOpen(true)} hitSlop={8}>
-        <SortButton>{'\u2195'}</SortButton>
+        {({pressed}) =>
+          Platform.OS === 'android' ? (
+            <SortButtonWrap style={pressed ? {opacity: 0.6, backgroundColor: '#6b6565'} : undefined}>
+              <SortIcon>{'\u2195'}</SortIcon>
+            </SortButtonWrap>
+          ) : (
+            <SortIcon style={pressed ? {opacity: 0.5} : undefined}>{'\u2195'}</SortIcon>
+          )
+        }
       </Pressable>
     ),
     [],
@@ -94,10 +122,7 @@ export default function ExchangeRatesScreen({navigation}: any) {
         sortMode={sortMode}
         sourceName={SOURCE_NAMES[source]}
         onRefresh={refetch}
-        onCurrencyPress={code => {
-          setTargetCode(code);
-          navigation.navigate('Convert');
-        }}
+        onCurrencyPress={handleCurrencyPress}
       />
 
       <DismissibleModal visible={menuOpen} onClose={() => setMenuOpen(false)}>

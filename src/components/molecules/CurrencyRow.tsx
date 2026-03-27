@@ -68,7 +68,7 @@ interface CurrencyRowProps {
   onPress?: (code: string) => void;
 }
 
-export default function CurrencyRow({rate, onPress}: CurrencyRowProps) {
+export default React.memo(function CurrencyRow({rate, onPress}: CurrencyRowProps) {
   const currencyLabel =
     rate.amount !== 1 ? `${rate.currency} (${rate.amount})` : rate.currency;
 
@@ -90,4 +90,4 @@ export default function CurrencyRow({rate, onPress}: CurrencyRowProps) {
     </RowContainer>
     </Pressable>
   );
-}
+});

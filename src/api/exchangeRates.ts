@@ -35,7 +35,7 @@ async function fetchFromFloatRates(): Promise<ExchangeRate[]> {
     const code = entry.code.toUpperCase();
     return {
       country: COUNTRY_MAP[code] ?? '',
-      currency: entry.name.split('/')[1]?.trim() ?? entry.code,
+      currency: (typeof entry.name === 'string' ? entry.name.split('/')[1]?.trim() : undefined) ?? entry.code,
       amount: 1,
       code,
       rate: entry.inverseRate,

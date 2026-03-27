@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useContext, useMemo, useState} from 'react';
 
 interface TargetCurrencyContextValue {
   targetCode: string;
@@ -9,9 +9,10 @@ const TargetCurrencyContext = createContext<TargetCurrencyContextValue | undefin
 
 export function TargetCurrencyProvider({children}: {children: React.ReactNode}) {
   const [targetCode, setTargetCode] = useState('EUR');
+  const value = useMemo(() => ({targetCode, setTargetCode}), [targetCode]);
 
   return (
-    <TargetCurrencyContext.Provider value={{targetCode, setTargetCode}}>
+    <TargetCurrencyContext.Provider value={value}>
       {children}
     </TargetCurrencyContext.Provider>
   );

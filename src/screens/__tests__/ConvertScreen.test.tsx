@@ -54,3 +54,43 @@ it('converts CZK to target currency on button press', () => {
   expect(screen.getByText('.')).toBeTruthy();
   expect(screen.getByText('Result in EUR')).toBeTruthy();
 });
+
+it('shows loading state', () => {
+  mockUseExchangeRates.mockReturnValue({
+    data: undefined,
+    isLoading: true,
+    error: null,
+    dataUpdatedAt: 0,
+  } as any);
+  renderWithTheme(<ConvertScreen />);
+  expect(screen.queryByDisplayValue('1,000.00')).toBeNull();
+});
+
+it('shows error state', () => {
+  mockUseExchangeRates.mockReturnValue({
+    data: undefined,
+    isLoading: false,
+    error: new Error('fail'),
+    dataUpdatedAt: 0,
+  } as any);
+  renderWithTheme(<ConvertScreen />);
+  expect(screen.getByText('Failed to load rates')).toBeTruthy();
+});
+
+it('displays the source name', () => {
+  renderWithTheme(<ConvertScreen />);
+  expect(screen.getByText('Czech National Bank')).toBeTruthy();
+});
+
+it('shows flag emoji in target currency picker', () => {
+  renderWithTheme(<ConvertScreen />);
+  expect(screen.getByText('🇪🇺')).toBeTruthy();
+  expect(screen.getByText('EUR')).toBeTruthy();
+});
+
+it('shows -- when converting with no amount', () => {
+  renderWithTheme(<ConvertScreen />);
+  fireEvent.changeText(screen.getByDisplayValue('1,000.00'), '');
+  fireEvent.press(screen.getByTestId('convert-button'));
+  expect(screen.getAllByText('-').length).toBe(2);
+});

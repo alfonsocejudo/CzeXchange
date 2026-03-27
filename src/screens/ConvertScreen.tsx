@@ -3,6 +3,7 @@ import {
   Text,
   ImageBackground,
   Keyboard,
+  Platform,
   Pressable,
   Animated,
   Easing,
@@ -50,6 +51,16 @@ const PickerWell = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+`;
+
+const PickerRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+const PickerFlag = styled.Text`
+  font-size: 20px;
+  margin-right: ${({theme}) => theme.spacing.sm};
 `;
 
 const PickerText = styled.Text`
@@ -108,6 +119,8 @@ export default function ConvertScreen() {
     includeFontPadding: false,
     textAlignVertical: 'center' as const,
     textAlign: 'center' as const,
+    marginTop: Platform.OS === 'android' ? -6 : 0,
+    marginLeft: Platform.OS === 'android' ? -2 : 0,
     ...textShadowStyle(themeColors.textShadows.embossedStrong),
   }), [themeColors]);
 
@@ -156,7 +169,12 @@ export default function ConvertScreen() {
       setResult('--');
       return;
     }
-    const converted = numAmount / (rate.rate / rate.amount);
+    const unitRate = rate.rate / rate.amount;
+    if (!Number.isFinite(unitRate) || unitRate <= 0) {
+      setResult('--');
+      return;
+    }
+    const converted = numAmount / unitRate;
     setResult(formatNumber(converted, {
       separator: decimalSeparator,
       delimiter: groupingSeparator,
@@ -209,7 +227,10 @@ export default function ConvertScreen() {
             <PickerWell
               onPress={() => setPickerOpen(true)}
               activeOpacity={0.7}>
-              <PickerText>{getCurrencyFlag(targetCode)} {targetCode}</PickerText>
+              <PickerRow>
+                {getCurrencyFlag(targetCode) ? <PickerFlag>{getCurrencyFlag(targetCode)}</PickerFlag> : null}
+                <PickerText>{targetCode}</PickerText>
+              </PickerRow>
               <ChevronText>{'\u25BC'}</ChevronText>
             </PickerWell>
             <FieldLabel>
