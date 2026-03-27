@@ -39,14 +39,14 @@ const CurrencyCode = styled.Text`
 `;
 
 const CurrencyName = styled.Text`
-  font-size: 11px;
+  font-size: ${({theme}) => theme.fontSizes.xxs};
   color: ${({theme}) => theme.colors.onSurfaceVariant};
   text-transform: uppercase;
 `;
 
 const RateWell = styled.View`
   background-color: ${({theme}) => theme.colors.surfaceContainerLowest};
-  padding: ${({theme}) => theme.spacing.sm} 10px;
+  padding: ${({theme}) => theme.spacing.sm} ${({theme}) => theme.spacing.sm};
   border-radius: 4px;
   margin-left: ${({theme}) => theme.spacing.sm};
   min-width: 76px;
@@ -58,7 +58,7 @@ const RateText = styled.Text`
   font-size: 17px;
   font-weight: bold;
   color: ${({theme}) => theme.colors.primary};
-  text-shadow-color: rgba(255, 180, 170, 0.5);
+  text-shadow-color: ${({theme}) => theme.colors.primaryGlow};
   text-shadow-offset: 0px 0px;
   text-shadow-radius: 6px;
 `;

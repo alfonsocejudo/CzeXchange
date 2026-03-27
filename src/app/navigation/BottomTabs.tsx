@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, TouchableOpacity, Text, ImageBackground, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme} from 'styled-components/native';
 import ExchangeRatesScreen from '../../screens/ExchangeRatesScreen';
 import ConvertScreen from '../../screens/ConvertScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
@@ -20,6 +21,7 @@ const btnInactive = require('../../assets/images/btn_inactive.png');
 
 function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
     <View style={[styles.tabBar, {paddingBottom: Math.max(insets.bottom, 12)}]}>
@@ -37,7 +39,11 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
               source={focused ? btnActive : btnInactive}
               style={styles.tabButtonImage}
               resizeMode="stretch">
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>
+              <Text
+                style={[
+                  styles.tabLabel,
+                  {color: focused ? theme.colors.tabLabelActive : theme.colors.tabLabelInactive},
+                ]}>
                 {label}
               </Text>
             </ImageBackground>
@@ -51,15 +57,27 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
 const bgImage = require('../../assets/images/bg.png');
 
 export default function BottomTabs() {
+  const theme = useTheme();
+
+  const headerTitleStyle = useMemo(() => ({
+    fontWeight: '800' as const,
+    fontSize: 13,
+    letterSpacing: 3,
+    color: theme.colors.embossedText,
+    textShadowColor: theme.colors.embossedHighlight,
+    textShadowOffset: {width: 0, height: 1},
+    textShadowRadius: 0,
+  }), [theme]);
+
   return (
     <ImageBackground source={bgImage} style={styles.bg} resizeMode="cover">
       <Tab.Navigator
         tabBar={props => <IndustrialTabBar {...props} />}
         screenOptions={{
           headerStyle: {backgroundColor: 'transparent', shadowColor: 'transparent'},
-          headerTintColor: '#3a3535',
+          headerTintColor: theme.colors.embossedText,
           headerTitle: ({children}) => (
-            <Text style={styles.headerTitle}>{(children as string).toUpperCase()}</Text>
+            <Text style={headerTitleStyle}>{(children as string).toUpperCase()}</Text>
           ),
           sceneStyle: {backgroundColor: 'transparent'},
         }}>
@@ -78,15 +96,6 @@ export default function BottomTabs() {
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-  },
-  headerTitle: {
-    fontWeight: '800',
-    fontSize: 13,
-    letterSpacing: 3,
-    color: '#6b6565',
-    textShadowColor: 'rgba(255,255,255,0.6)',
-    textShadowOffset: {width: 0, height: 1},
-    textShadowRadius: 0,
   },
   tabBar: {
     flexDirection: 'row',
@@ -107,10 +116,6 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#c8c4bf',
     letterSpacing: 1.5,
-  },
-  tabLabelActive: {
-    color: '#1a1a1a',
   },
 });

@@ -6,9 +6,9 @@ const DigitText = styled.Text<{stale?: boolean}>`
   font-size: 48px;
   font-weight: bold;
   color: ${({stale, theme}) =>
-    stale ? theme.colors.textDisabled : '#00dc82'};
-  text-shadow-color: ${({stale}) =>
-    stale ? 'transparent' : 'rgba(0, 220, 130, 0.5)'};
+    stale ? theme.colors.textDisabled : theme.colors.success};
+  text-shadow-color: ${({stale, theme}) =>
+    stale ? 'transparent' : theme.colors.successGlow};
   text-shadow-offset: 0px 0px;
   text-shadow-radius: 10px;
   text-align: center;

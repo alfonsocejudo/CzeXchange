@@ -9,7 +9,7 @@ export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
 const ModalOverlay = styled.View`
   flex: 1;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: ${({theme}) => theme.colors.overlay};
   justify-content: flex-start;
   align-items: flex-end;
   padding-top: 50px;
@@ -29,7 +29,7 @@ const MenuOption = styled.TouchableOpacity<{selected: boolean}>`
   align-items: center;
   justify-content: space-between;
   border-bottom-width: 1px;
-  border-bottom-color: rgba(255, 255, 255, 0.05);
+  border-bottom-color: ${({theme}) => theme.colors.divider};
 `;
 
 const MenuOptionText = styled.Text<{selected: boolean}>`
@@ -46,12 +46,12 @@ const CheckMark = styled.Text`
 `;
 
 const SortButton = styled.Text`
-  font-size: 11px;
+  font-size: ${({theme}) => theme.fontSizes.xxs};
   font-weight: 800;
-  color: #6b6565;
+  color: ${({theme}) => theme.colors.embossedText};
   letter-spacing: 2px;
-  padding: 6px 10px;
-  text-shadow-color: rgba(255, 255, 255, 0.6);
+  padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.sm};
+  text-shadow-color: ${({theme}) => theme.colors.embossedHighlight};
   text-shadow-offset: 0px 1px;
   text-shadow-radius: 0px;
 `;

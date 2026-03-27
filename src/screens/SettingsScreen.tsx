@@ -2,58 +2,12 @@ import React from 'react';
 import {Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
+import GlassPanel from '../components/organisms/GlassPanel';
+import Label from '../components/atoms/Label';
 import {useSource} from '../context/SourceContext';
 import {Source} from '../types/exchangeRate';
 
-const GlassEmboss = styled.View`
-  border-radius: 16px;
-  border-width: 4px;
-  border-color: #8a8785;
-`;
-
-const GlassWrapper = styled.View`
-  border-radius: 13px;
-  overflow: hidden;
-`;
-
-const GlassContent = styled.View`
-  background-color: ${({theme}) => theme.colors.surfaceContainerLowest};
-  padding: ${({theme}) => theme.spacing.lg};
-`;
-
-const ShimmerOverlay = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
-
-const ShimmerBand = styled.View`
-  position: absolute;
-  top: -20%;
-  left: -50%;
-  width: 70%;
-  height: 160%;
-  background-color: rgba(255, 255, 255, 0.03);
-  transform: rotate(25deg);
-`;
-
-const ShimmerEdge = styled.View`
-  position: absolute;
-  top: -20%;
-  left: 19%;
-  width: 2px;
-  height: 160%;
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: rotate(25deg);
-`;
-
-const SectionLabel = styled.Text`
-  font-size: 13px;
-  color: ${({theme}) => theme.colors.onSurfaceVariant};
-  text-transform: uppercase;
-  letter-spacing: 2px;
+const SectionLabel = styled(Label)`
   margin-bottom: ${({theme}) => theme.spacing.md};
 `;
 
@@ -106,9 +60,7 @@ export default function SettingsScreen() {
 
   return (
     <AppScreen>
-      <GlassEmboss>
-        <GlassWrapper>
-          <GlassContent>
+      <GlassPanel expand={false}>
             <SectionLabel>Exchange Rate Source</SectionLabel>
             {sources.map(({key, label}) => (
               <Pressable key={key} onPress={() => setSource(key)}>
@@ -120,13 +72,7 @@ export default function SettingsScreen() {
                 </Option>
               </Pressable>
             ))}
-          </GlassContent>
-          <ShimmerOverlay pointerEvents="none">
-            <ShimmerBand />
-            <ShimmerEdge />
-          </ShimmerOverlay>
-        </GlassWrapper>
-      </GlassEmboss>
+      </GlassPanel>
     </AppScreen>
   );
 }
