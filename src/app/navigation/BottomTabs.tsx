@@ -15,9 +15,7 @@ const TAB_LABELS: Record<string, string> = {
   Settings: 'SETTINGS',
 };
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const btnActive = require('../../assets/images/btn_active.png');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const btnInactive = require('../../assets/images/btn_inactive.png');
 
 function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
@@ -50,7 +48,6 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const bgImage = require('../../assets/images/bg.png');
 
 export default function BottomTabs() {

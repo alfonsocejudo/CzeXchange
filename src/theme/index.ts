@@ -13,6 +13,7 @@ export const theme = {
     onSurface: '#e6e1e5',
     onSurfaceVariant: '#e7bdb7',
     outlineVariant: '#49454f',
+    textDisabled: '#555555',
     text: '#e6e1e5',
     textSecondary: '#e7bdb7',
   },
