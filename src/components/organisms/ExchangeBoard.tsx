@@ -1,11 +1,15 @@
-import React, {useMemo, useState} from 'react';
-import {FlatList, ActivityIndicator, TextInput, Pressable} from 'react-native';
+import React, {useCallback, useMemo, useState} from 'react';
+import {FlatList, TextInput, Pressable} from 'react-native';
 import styled, {useTheme} from 'styled-components/native';
 import {ExchangeRate} from '../../types/exchangeRate';
 import CurrencyRow from '../molecules/CurrencyRow';
 import GlassPanel from './GlassPanel';
 import Label from '../atoms/Label';
+import {LoadingState, ErrorState} from '../molecules/LoadingErrorState';
+import SourceTag from '../molecules/SourceTag';
 import {getCurrencyFlag} from '../../constants/flags';
+import {primaryGlowShadow} from '../../theme/mixins';
+import {useSearchFilter} from '../../hooks/useSearchFilter';
 import type {SortMode} from '../../screens/ExchangeRatesScreen';
 
 const HeaderBar = styled.View`
@@ -28,9 +32,7 @@ const TimestampText = styled.Text`
   color: ${({theme}) => theme.colors.primary};
   font-weight: bold;
   margin-left: ${({theme}) => theme.spacing.sm};
-  text-shadow-color: ${({theme}) => theme.colors.primaryGlow};
-  text-shadow-offset: 0px 0px;
-  text-shadow-radius: 4px;
+  ${primaryGlowShadow(4)}
 `;
 
 const ColumnHeaders = styled.View`
@@ -71,32 +73,6 @@ const RateColumn = styled.View`
   margin-left: ${({theme}) => theme.spacing.sm};
   align-items: flex-end;
   padding-right: ${({theme}) => theme.spacing.sm};
-`;
-
-const CenteredContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ErrorText = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.primaryContainer};
-`;
-
-const SourceRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: ${({theme}) => theme.spacing.xs};
-`;
-
-const SourceLabel = styled(Label)``;
-
-const RefreshButton = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.onSurfaceVariant};
-  margin-left: ${({theme}) => theme.spacing.sm};
 `;
 
 interface ExchangeBoardProps {
@@ -152,29 +128,23 @@ export default function ExchangeBoard({
 }: ExchangeBoardProps) {
   const theme = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const sortedRates = useMemo(() => sortRates(rates, sortMode), [rates, sortMode]);
 
-  const filteredRates = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return sortedRates;
-    }
-    const q = searchQuery.toLowerCase();
-    return sortedRates.filter(
-      r =>
-        r.code.toLowerCase().includes(q) ||
-        r.currency.toLowerCase().includes(q) ||
-        r.country.toLowerCase().includes(q),
-    );
-  }, [sortedRates, searchQuery]);
+  const matchRate = useCallback(
+    (r: ExchangeRate, q: string) =>
+      r.code.toLowerCase().includes(q) ||
+      r.currency.toLowerCase().includes(q) ||
+      r.country.toLowerCase().includes(q),
+    [],
+  );
+  const {query: searchQuery, setQuery: setSearchQuery, filtered: filteredRates} =
+    useSearchFilter(sortedRates, matchRate);
 
   if (isLoading) {
     return (
       <GlassPanel>
-        <CenteredContainer>
-          <ActivityIndicator color={theme.colors.primary} size="large" />
-        </CenteredContainer>
+        <LoadingState />
       </GlassPanel>
     );
   }
@@ -182,25 +152,14 @@ export default function ExchangeBoard({
   if (error) {
     return (
       <GlassPanel>
-        <CenteredContainer>
-          <ErrorText>Failed to load rates</ErrorText>
-        </CenteredContainer>
+        <ErrorState />
       </GlassPanel>
     );
   }
 
   return (
     <GlassPanel>
-      {sourceName && (
-        <SourceRow>
-          <SourceLabel>{sourceName}</SourceLabel>
-          {onRefresh && (
-            <Pressable onPress={onRefresh} hitSlop={8}>
-              <RefreshButton>{'\u21BB'}</RefreshButton>
-            </Pressable>
-          )}
-        </SourceRow>
-      )}
+      {sourceName && <SourceTag name={sourceName} onRefresh={onRefresh} />}
       <HeaderBar>
         <HeaderLabel>LAST UPDATED:</HeaderLabel>
         <TimestampText>{formatTimestamp(updatedAt)}</TimestampText>

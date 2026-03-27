@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {ExchangeRate} from '../../types/exchangeRate';
 import {getCurrencyFlag} from '../../constants/flags';
+import {primaryGlowShadow} from '../../theme/mixins';
 
 const RowContainer = styled.View`
   flex-direction: row;
@@ -58,9 +59,7 @@ const RateText = styled.Text`
   font-size: 17px;
   font-weight: bold;
   color: ${({theme}) => theme.colors.primary};
-  text-shadow-color: ${({theme}) => theme.colors.primaryGlow};
-  text-shadow-offset: 0px 0px;
-  text-shadow-radius: 6px;
+  ${primaryGlowShadow()}
 `;
 
 interface CurrencyRowProps {

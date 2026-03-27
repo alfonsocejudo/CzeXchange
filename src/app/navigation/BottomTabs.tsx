@@ -7,6 +7,8 @@ import {useTheme} from 'styled-components/native';
 import ExchangeRatesScreen from '../../screens/ExchangeRatesScreen';
 import ConvertScreen from '../../screens/ConvertScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
+import {embossedShadowStyle} from '../../theme/mixins';
+import {images} from '../../constants/assets';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,9 +17,6 @@ const TAB_LABELS: Record<string, string> = {
   Convert: 'CONVERT',
   Settings: 'SETTINGS',
 };
-
-const btnActive = require('../../assets/images/btn_active.png');
-const btnInactive = require('../../assets/images/btn_inactive.png');
 
 function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -36,7 +35,7 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
             activeOpacity={1}
             style={styles.tabButtonOuter}>
             <ImageBackground
-              source={focused ? btnActive : btnInactive}
+              source={focused ? images.btnActive : images.btnInactive}
               style={styles.tabButtonImage}
               resizeMode="stretch">
               <Text
@@ -54,8 +53,6 @@ function IndustrialTabBar({state, navigation}: BottomTabBarProps) {
   );
 }
 
-const bgImage = require('../../assets/images/bg.png');
-
 export default function BottomTabs() {
   const theme = useTheme();
 
@@ -64,13 +61,11 @@ export default function BottomTabs() {
     fontSize: 13,
     letterSpacing: 3,
     color: theme.colors.embossedText,
-    textShadowColor: theme.colors.embossedHighlight,
-    textShadowOffset: {width: 0, height: 1},
-    textShadowRadius: 0,
+    ...embossedShadowStyle(theme),
   }), [theme]);
 
   return (
-    <ImageBackground source={bgImage} style={styles.bg} resizeMode="cover">
+    <ImageBackground source={images.bg} style={styles.bg} resizeMode="cover">
       <Tab.Navigator
         tabBar={props => <IndustrialTabBar {...props} />}
         screenOptions={{

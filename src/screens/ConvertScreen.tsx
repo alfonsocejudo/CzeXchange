@@ -6,7 +6,6 @@ import {
   Pressable,
   Animated,
   Easing,
-  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import styled, {useTheme} from 'styled-components/native';
@@ -15,7 +14,13 @@ import GlassPanel from '../components/organisms/GlassPanel';
 import PickerModal from '../components/molecules/PickerModal';
 import Label from '../components/atoms/Label';
 import SlotText from '../components/atoms/SlotText';
+import SourceTag from '../components/molecules/SourceTag';
+import {LoadingState, ErrorState} from '../components/molecules/LoadingErrorState';
 import {useExchangeRates} from '../hooks/useExchangeRates';
+import {useSource} from '../context/SourceContext';
+import {SOURCE_NAMES} from '../constants/sources';
+import {successGlowShadow, embossedShadow, primaryGlowStyle} from '../theme/mixins';
+import {images} from '../constants/assets';
 
 const InputWell = styled.View`
   border-width: 2px;
@@ -68,26 +73,13 @@ const ResultText = styled.Text`
   font-size: 48px;
   font-weight: bold;
   color: ${({theme}) => theme.colors.success};
-  text-shadow-color: ${({theme}) => theme.colors.successGlow};
-  text-shadow-offset: 0px 0px;
-  text-shadow-radius: 10px;
+  ${successGlowShadow}
 `;
 
 const ResultLabel = styled(Label)<{stale?: boolean}>`
   text-align: center;
   color: ${({stale, theme}) =>
     stale ? theme.colors.primaryContainer : theme.colors.onSurfaceVariant};
-`;
-
-const CenteredContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ErrorText = styled.Text`
-  font-size: ${({theme}) => theme.fontSizes.sm};
-  color: ${({theme}) => theme.colors.primaryContainer};
 `;
 
 const ConvertButtonWrapper = styled.View`
@@ -98,17 +90,12 @@ const ConvertButtonWrapper = styled.View`
 const ConvertButtonLabel = styled.Text`
   font-size: 64px;
   color: ${({theme}) => theme.colors.embossedText};
-  text-shadow-color: ${({theme}) => theme.colors.embossedHighlight};
-  text-shadow-offset: 0px 2px;
-  text-shadow-radius: 0px;
+  ${embossedShadow(2)}
 `;
-
-
-const btnConvert = require('../assets/images/btn_convert.png');
-const btnConvertPressed = require('../assets/images/btn_convert_pressed.png');
 
 export default function ConvertScreen() {
   const themeColors = useTheme();
+  const {source} = useSource();
   const {data: rates, isLoading, error} = useExchangeRates();
 
   const amountInputStyle = useMemo(() => ({
@@ -117,9 +104,7 @@ export default function ConvertScreen() {
     color: themeColors.colors.primary,
     textAlign: 'center' as const,
     padding: 0,
-    textShadowColor: themeColors.colors.primaryGlow,
-    textShadowOffset: {width: 0, height: 0},
-    textShadowRadius: 6,
+    ...primaryGlowStyle(themeColors),
   }), [themeColors]);
   const [amount, setAmount] = useState('1000');
   const [targetCode, setTargetCode] = useState('EUR');
@@ -168,9 +153,7 @@ export default function ConvertScreen() {
     return (
       <AppScreen>
         <GlassPanel>
-          <CenteredContainer>
-            <ActivityIndicator color={themeColors.colors.primary} size="large" />
-          </CenteredContainer>
+          <LoadingState />
         </GlassPanel>
       </AppScreen>
     );
@@ -180,9 +163,7 @@ export default function ConvertScreen() {
     return (
       <AppScreen>
         <GlassPanel>
-          <CenteredContainer>
-            <ErrorText>Failed to load rates</ErrorText>
-          </CenteredContainer>
+          <ErrorState />
         </GlassPanel>
       </AppScreen>
     );
@@ -192,6 +173,7 @@ export default function ConvertScreen() {
     <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
     <AppScreen>
       <GlassPanel expand={false}>
+            <SourceTag name={SOURCE_NAMES[source]} />
             <InputWell>
               <TextInput
                 style={amountInputStyle}
@@ -241,7 +223,7 @@ export default function ConvertScreen() {
         <Pressable onPress={convert} testID="convert-button">
           {({pressed}) => (
             <ImageBackground
-              source={pressed ? btnConvertPressed : btnConvert}
+              source={pressed ? images.btnConvertPressed : images.btnConvert}
               style={styles.convertButton}
               resizeMode="stretch">
               <Animated.View style={[styles.iconContainer, {transform: [{rotate: spin}]}]}>

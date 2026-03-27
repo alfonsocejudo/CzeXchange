@@ -1,11 +1,13 @@
 import React, {useState, useCallback} from 'react';
-import {Pressable, Modal, StyleSheet} from 'react-native';
+import {Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import ExchangeBoard from '../components/organisms/ExchangeBoard';
+import DismissibleModal from '../components/molecules/DismissibleModal';
 import {useExchangeRates} from '../hooks/useExchangeRates';
 import {useSource} from '../context/SourceContext';
 import {SOURCE_NAMES} from '../constants/sources';
+import {embossedShadow} from '../theme/mixins';
 
 export type SortMode = 'default' | 'alphabetical' | 'highest' | 'lowest';
 
@@ -51,9 +53,7 @@ const SortButton = styled.Text`
   font-size: 18px;
   color: ${({theme}) => theme.colors.embossedText};
   padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.sm};
-  text-shadow-color: ${({theme}) => theme.colors.embossedHighlight};
-  text-shadow-offset: 0px 1px;
-  text-shadow-radius: 0px;
+  ${embossedShadow()}
 `;
 
 const SORT_OPTIONS: {key: SortMode; label: string}[] = [
@@ -94,40 +94,28 @@ export default function ExchangeRatesScreen({navigation}: any) {
         onRefresh={refetch}
       />
 
-      <Modal
-        visible={menuOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setMenuOpen(false)}>
-        <Pressable style={styles.flex} onPress={() => setMenuOpen(false)}>
-          <ModalOverlay>
-            <Pressable onPress={e => e.stopPropagation()}>
-              <MenuCard>
-                {SORT_OPTIONS.map(({key, label}) => (
-                  <MenuOption
-                    key={key}
-                    selected={sortMode === key}
-                    onPress={() => {
-                      setSortMode(key);
-                      setMenuOpen(false);
-                    }}>
-                    <MenuOptionText selected={sortMode === key}>
-                      {label}
-                    </MenuOptionText>
-                    {sortMode === key && <CheckMark>{'\u2713'}</CheckMark>}
-                  </MenuOption>
-                ))}
-              </MenuCard>
-            </Pressable>
-          </ModalOverlay>
-        </Pressable>
-      </Modal>
+      <DismissibleModal visible={menuOpen} onClose={() => setMenuOpen(false)}>
+        <ModalOverlay>
+          <Pressable onPress={e => e.stopPropagation()}>
+            <MenuCard>
+              {SORT_OPTIONS.map(({key, label}) => (
+                <MenuOption
+                  key={key}
+                  selected={sortMode === key}
+                  onPress={() => {
+                    setSortMode(key);
+                    setMenuOpen(false);
+                  }}>
+                  <MenuOptionText selected={sortMode === key}>
+                    {label}
+                  </MenuOptionText>
+                  {sortMode === key && <CheckMark>{'\u2713'}</CheckMark>}
+                </MenuOption>
+              ))}
+            </MenuCard>
+          </Pressable>
+        </ModalOverlay>
+      </DismissibleModal>
     </AppScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-});

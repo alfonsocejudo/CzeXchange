@@ -1,7 +1,9 @@
-import React, {useState, useMemo} from 'react';
-import {Modal, FlatList, Pressable, StyleSheet} from 'react-native';
+import React, {useCallback} from 'react';
+import {FlatList, Pressable} from 'react-native';
 import styled, {useTheme} from 'styled-components/native';
 import Label from '../atoms/Label';
+import DismissibleModal from './DismissibleModal';
+import {useSearchFilter} from '../../hooks/useSearchFilter';
 
 const Overlay = styled.View`
   flex: 1;
@@ -70,15 +72,11 @@ export default function PickerModal({
   onClose,
 }: PickerModalProps) {
   const theme = useTheme();
-  const [query, setQuery] = useState('');
-
-  const filtered = useMemo(() => {
-    if (!query.trim()) {
-      return options;
-    }
-    const q = query.toLowerCase();
-    return options.filter(o => o.toLowerCase().includes(q));
-  }, [options, query]);
+  const matchOption = useCallback(
+    (o: string, q: string) => o.toLowerCase().includes(q),
+    [],
+  );
+  const {query, setQuery, filtered} = useSearchFilter(options, matchOption);
 
   const handleClose = () => {
     setQuery('');
@@ -91,44 +89,32 @@ export default function PickerModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}>
-      <Pressable style={styles.flex} onPress={handleClose}>
-        <Overlay>
-          <Pressable onPress={e => e.stopPropagation()}>
-            <Card>
-              <Title>{title}</Title>
-              <SearchInput
-                value={query}
-                onChangeText={setQuery}
-                placeholder="Search..."
-                placeholderTextColor={theme.colors.textDisabled}
-                autoCorrect={false}
-              />
-              <FlatList
-                data={filtered}
-                keyExtractor={item => item}
-                keyboardShouldPersistTaps="handled"
-                renderItem={({item}) => (
-                  <OptionRow onPress={() => handleSelect(item)}>
-                    <OptionText>{item}</OptionText>
-                  </OptionRow>
-                )}
-                ListEmptyComponent={<EmptyText>No matches</EmptyText>}
-              />
-            </Card>
-          </Pressable>
-        </Overlay>
-      </Pressable>
-    </Modal>
+    <DismissibleModal visible={visible} onClose={handleClose}>
+      <Overlay>
+        <Pressable onPress={e => e.stopPropagation()}>
+          <Card>
+            <Title>{title}</Title>
+            <SearchInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search..."
+              placeholderTextColor={theme.colors.textDisabled}
+              autoCorrect={false}
+            />
+            <FlatList
+              data={filtered}
+              keyExtractor={item => item}
+              keyboardShouldPersistTaps="handled"
+              renderItem={({item}) => (
+                <OptionRow onPress={() => handleSelect(item)}>
+                  <OptionText>{item}</OptionText>
+                </OptionRow>
+              )}
+              ListEmptyComponent={<EmptyText>No matches</EmptyText>}
+            />
+          </Card>
+        </Pressable>
+      </Overlay>
+    </DismissibleModal>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-});

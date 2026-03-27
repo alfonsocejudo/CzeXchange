@@ -2,6 +2,7 @@ import React from 'react';
 import {render, screen, fireEvent} from '@testing-library/react-native';
 import {ThemeProvider} from 'styled-components/native';
 import {theme} from '../../theme';
+import {SourceProvider} from '../../context/SourceContext';
 import ConvertScreen from '../ConvertScreen';
 
 jest.mock('../../hooks/useExchangeRates');
@@ -18,7 +19,11 @@ const MOCK_RATES = [
 ];
 
 function renderWithTheme(ui: React.ReactElement) {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+  return render(
+    <ThemeProvider theme={theme}>
+      <SourceProvider>{ui}</SourceProvider>
+    </ThemeProvider>,
+  );
 }
 
 beforeEach(() => {
