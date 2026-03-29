@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import styled from 'styled-components/native';
 
-const DigitText = styled.Text<{ stale?: boolean; size?: number }>`
+const DisplayText = styled.Text<{ stale?: boolean; size?: number }>`
+  font-family: ${({ theme }) => theme.fonts.ledDisplay};
   font-size: ${({ size }) => size ?? 48}px;
-  font-weight: bold;
   color: ${({ stale, theme }) =>
     stale ? theme.colors.textDisabled : theme.colors.success};
   text-shadow-color: ${({ stale, theme }) =>
@@ -15,57 +14,6 @@ const DigitText = styled.Text<{ stale?: boolean; size?: number }>`
 `;
 
 const DIGITS = '0123456789';
-
-function SlotDigit({
-  char,
-  delay,
-  animate,
-  stale,
-  fontSize,
-}: {
-  char: string;
-  delay: number;
-  animate: number;
-  stale?: boolean;
-  fontSize?: number;
-}) {
-  const isDigit = DIGITS.includes(char);
-  const [display, setDisplay] = useState(char);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (!isDigit || animate === 0) {
-      setDisplay(char);
-      return;
-    }
-
-    // Start cycling random digits
-    intervalRef.current = setInterval(() => {
-      setDisplay(DIGITS[Math.floor(Math.random() * 10)]);
-    }, 80);
-
-    // Stop cycling and show final digit after delay
-    const timeout = setTimeout(() => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      setDisplay(char);
-    }, delay + 300);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      clearTimeout(timeout);
-    };
-  }, [char, delay, animate, isDigit]);
-
-  return (
-    <DigitText stale={stale} size={fontSize}>
-      {isDigit ? display : char}
-    </DigitText>
-  );
-}
 
 interface SlotTextProps {
   value: string;
@@ -80,36 +28,72 @@ export default function SlotText({
   stale,
   fontSize,
 }: SlotTextProps) {
-  const chars = value.split('');
-  let digitIndex = 0;
+  const [display, setDisplay] = useState(value);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    if (animate === 0) {
+      setDisplay(value);
+      return;
+    }
+
+    const chars = value.split('');
+    const current = [...chars];
+    const digitSlots: {
+      index: number;
+      finalChar: string;
+      settleTime: number;
+    }[] = [];
+
+    let digitIndex = 0;
+    chars.forEach((char, i) => {
+      if (!DIGITS.includes(char)) return;
+      digitSlots.push({
+        index: i,
+        finalChar: char,
+        settleTime: digitIndex * 150 + 300,
+      });
+      digitIndex++;
+    });
+
+    const startTime = Date.now();
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      let allSettled = true;
+
+      digitSlots.forEach(({ index, finalChar, settleTime }) => {
+        if (elapsed >= settleTime) {
+          current[index] = finalChar;
+        } else {
+          current[index] = DIGITS[Math.floor(Math.random() * 10)];
+          allSettled = false;
+        }
+      });
+
+      setDisplay(current.join(''));
+
+      if (allSettled && intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }, 80);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [value, animate]);
 
   return (
-    <View style={styles.row}>
-      {chars.map((char, i) => {
-        const isDigit = DIGITS.includes(char);
-        const delay = isDigit ? digitIndex * 150 : 0;
-        if (isDigit) {
-          digitIndex++;
-        }
-        return (
-          <SlotDigit
-            key={i}
-            char={char}
-            delay={delay}
-            animate={animate}
-            stale={stale}
-            fontSize={fontSize}
-          />
-        );
-      })}
-    </View>
+    <DisplayText stale={stale} size={fontSize}>
+      {display}
+    </DisplayText>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

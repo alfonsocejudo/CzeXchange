@@ -1,7 +1,8 @@
-import React, { useRef, useCallback } from 'react';
-import { Pressable, Animated, Easing } from 'react-native';
+import React, { useCallback } from 'react';
+import { Animated, Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import Label from '../atoms/Label';
+import { useSpinAnimation } from '../../hooks/useAnimations';
 
 const Row = styled.View`
   flex-direction: row;
@@ -13,8 +14,7 @@ const Row = styled.View`
 const Name = styled(Label)``;
 
 const RefreshIcon = styled(Animated.Text)`
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  line-height: ${({ theme }) => theme.fontSizes.lg};
+  font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.onSurfaceVariant};
   margin-left: ${({ theme }) => theme.spacing.sm};
 `;
@@ -25,23 +25,12 @@ interface SourceTagProps {
 }
 
 export default function SourceTag({ name, onRefresh }: SourceTagProps) {
-  const spinValue = useRef(new Animated.Value(0)).current;
-
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '720deg'],
-  });
+  const { spin, triggerSpin } = useSpinAnimation();
 
   const handleRefresh = useCallback(() => {
-    spinValue.setValue(0);
-    Animated.timing(spinValue, {
-      toValue: 1,
-      duration: 800,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
+    triggerSpin();
     onRefresh?.();
-  }, [spinValue, onRefresh]);
+  }, [triggerSpin, onRefresh]);
 
   return (
     <Row>

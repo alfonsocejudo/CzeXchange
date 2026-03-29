@@ -28,9 +28,9 @@ const HeaderLabel = styled(Label)`
 `;
 
 const TimestampText = styled.Text`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-family: ${({ theme }) => theme.fonts.ledDisplay};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.primary};
-  font-weight: bold;
   margin-left: ${({ theme }) => theme.spacing.sm};
   ${textShadow('primaryGlowSubtle')}
 `;
@@ -38,13 +38,13 @@ const TimestampText = styled.Text`
 const ColumnHeaders = styled.View`
   flex-direction: row;
   align-items: center;
-  height: 28px;
+  height: 34px;
   padding: 0px ${({ theme }) => theme.spacing.md};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ColumnLabel = styled(Label)`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.md};
   letter-spacing: 1px;
 `;
 
@@ -55,14 +55,14 @@ const CurrencyColumn = styled.View`
 `;
 
 const SearchIcon = styled.Text`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.onSurfaceVariant};
   margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 const SearchInput = styled.TextInput`
   flex: 1;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.onSurface};
   padding: 0px;
   margin-left: ${({ theme }) => theme.spacing.sm};
@@ -116,6 +116,8 @@ function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
   }
   return sorted;
 }
+
+const rateKeyExtractor = (item: ExchangeRate) => item.code;
 
 function formatTimestamp(ms?: number): string {
   if (!ms) {
@@ -224,7 +226,7 @@ export default function ExchangeBoard({
       </ColumnHeaders>
       <FlatList
         data={filteredRates}
-        keyExtractor={item => item.code}
+        keyExtractor={rateKeyExtractor}
         renderItem={renderCurrencyRow}
         indicatorStyle="white"
       />

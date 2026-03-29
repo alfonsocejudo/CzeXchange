@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-CzeXchange.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-CzeXchange.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		21578496B882498BA53C5239 /* DSEG7Classic-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A385FF49B3694EC5908BED7F /* DSEG7Classic-Bold.ttf */; };
+		5D4DAB6CFB564BFB990E2C10 /* DSEG7Classic-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9FF4B9DD4A2948ACBEE38710 /* DSEG7Classic-Regular.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BAEB75F499A145ABB1B868E7 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -24,6 +26,8 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-CzeXchange.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CzeXchange.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = CzeXchange/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = CzeXchange/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9FF4B9DD4A2948ACBEE38710 /* DSEG7Classic-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "DSEG7Classic-Regular.ttf"; path = "../src/assets/fonts/DSEG7Classic-Regular.ttf"; sourceTree = "<group>"; };
+		A385FF49B3694EC5908BED7F /* DSEG7Classic-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "DSEG7Classic-Bold.ttf"; path = "../src/assets/fonts/DSEG7Classic-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -60,6 +64,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		595DD99881A543D0B1B5B644 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9FF4B9DD4A2948ACBEE38710 /* DSEG7Classic-Regular.ttf */,
+				A385FF49B3694EC5908BED7F /* DSEG7Classic-Bold.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +89,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				595DD99881A543D0B1B5B644 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -161,6 +176,8 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BAEB75F499A145ABB1B868E7 /* PrivacyInfo.xcprivacy in Resources */,
+				5D4DAB6CFB564BFB990E2C10 /* DSEG7Classic-Regular.ttf in Resources */,
+				21578496B882498BA53C5239 /* DSEG7Classic-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

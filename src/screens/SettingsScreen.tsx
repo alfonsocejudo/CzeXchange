@@ -1,11 +1,12 @@
 import React from 'react';
-import { Pressable } from 'react-native';
-import styled from 'styled-components/native';
+import { Animated, Pressable } from 'react-native';
+import styled, { useTheme } from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import GlassPanel from '../components/organisms/GlassPanel';
 import Label from '../components/atoms/Label';
 import { useSource } from '../context/SourceContext';
 import { SOURCE_NAMES } from '../constants/sources';
+import { usePulseAnimation } from '../hooks/useAnimations';
 
 const version = require('../../package.json').version;
 
@@ -44,13 +45,6 @@ const IndicatorDot = styled.View`
   background-color: ${({ theme }) => theme.colors.primary};
 `;
 
-const OptionText = styled.Text<{ selected: boolean }>`
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  color: ${({ selected, theme }) =>
-    selected ? theme.colors.onSurface : theme.colors.onSurfaceVariant};
-  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
-`;
-
 const VersionText = styled.Text`
   font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.onSurface};
@@ -65,6 +59,57 @@ const sources = Object.entries(SOURCE_NAMES).map(([key, label]) => ({
   label,
 }));
 
+function SourceOption({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  const pulseAnim = usePulseAnimation(selected);
+
+  return (
+    <Pressable onPress={onPress}>
+      <Option selected={selected}>
+        <Animated.View
+          style={[
+            selected
+              ? {
+                  shadowColor: theme.colors.primary,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 6,
+                }
+              : undefined,
+            selected && { opacity: pulseAnim },
+          ]}
+        >
+          <Indicator selected={selected}>
+            {selected && <IndicatorDot />}
+          </Indicator>
+        </Animated.View>
+        <Animated.Text
+          style={[
+            {
+              fontSize: 16,
+              color: selected
+                ? theme.colors.primary
+                : theme.colors.onSurfaceVariant,
+              fontWeight: selected ? 'bold' : 'normal',
+            },
+            selected && { opacity: pulseAnim },
+          ]}
+        >
+          {label}
+        </Animated.Text>
+      </Option>
+    </Pressable>
+  );
+}
+
 export default function SettingsScreen() {
   const { source, setSource } = useSource();
 
@@ -73,14 +118,12 @@ export default function SettingsScreen() {
       <GlassPanel expand={false}>
         <SectionLabel>Exchange Rate Source</SectionLabel>
         {sources.map(({ key, label }) => (
-          <Pressable key={key} onPress={() => setSource(key)}>
-            <Option selected={source === key}>
-              <Indicator selected={source === key}>
-                {source === key && <IndicatorDot />}
-              </Indicator>
-              <OptionText selected={source === key}>{label}</OptionText>
-            </Option>
-          </Pressable>
+          <SourceOption
+            key={key}
+            label={label}
+            selected={source === key}
+            onPress={() => setSource(key)}
+          />
         ))}
         <Spacer />
         <SectionLabel>App Version</SectionLabel>

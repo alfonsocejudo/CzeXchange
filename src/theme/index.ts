@@ -9,9 +9,9 @@ const colors = {
   surfaceVariant: '#353534',
 
   // Primary
-  primary: '#ffb4aa',
-  primaryContainer: '#ff5545',
-  primaryGlow: 'rgba(255, 180, 170, 0.4)',
+  primary: '#00e5ff',
+  primaryContainer: '#00838f',
+  primaryGlow: 'rgba(0, 229, 255, 0.4)',
 
   // Secondary / Accent
   secondary: '#ffb74d',
@@ -33,8 +33,7 @@ const colors = {
   embossBorder: '#8a8785',
 
   // Tab bar
-  tabLabelActive: '#1a1a1a',
-  tabLabelInactive: '#c8c4bf',
+  tabLabelInactive: '#888888',
 
   // Overlay / Shimmer
   overlay: 'rgba(0, 0, 0, 0.7)',
@@ -54,6 +53,10 @@ export const theme = {
     successGlow: { color: colors.successGlow, offsetY: 0, radius: 10 },
     embossed: { color: colors.embossedHighlight, offsetY: 1, radius: 0 },
     embossedStrong: { color: colors.embossedHighlight, offsetY: 2, radius: 0 },
+    tabActiveGlow: { color: colors.primaryGlow, offsetY: 0, radius: 8 },
+  },
+  fonts: {
+    ledDisplay: 'DSEG7Classic-Bold',
   },
   fontSizes: {
     xxs: '11px',

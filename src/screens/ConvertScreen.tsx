@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   ImageBackground,
   Keyboard,
   Platform,
   Pressable,
   Animated,
-  Easing,
   StyleSheet,
 } from 'react-native';
 import CurrencyInput, { formatNumber } from 'react-native-currency-input';
@@ -28,6 +27,9 @@ import { SOURCE_NAMES } from '../constants/sources';
 import { getNumberFormatSettings } from 'react-native-localize';
 import { textShadow, textShadowStyle } from '../theme/textShadows';
 import { images } from '../constants/assets';
+import { useSpinAnimation } from '../hooks/useAnimations';
+
+const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
 
 const InputWell = styled.View`
   border-width: 2px;
@@ -84,15 +86,14 @@ const ResultWell = styled.View`
   padding: 18px ${({ theme }) => theme.spacing.md};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
   align-items: center;
-  overflow: hidden;
 `;
 
 const ResultText = styled.Text.attrs({
   numberOfLines: 1,
   adjustsFontSizeToFit: true,
 })`
+  font-family: ${({ theme }) => theme.fonts.ledDisplay};
   font-size: 48px;
-  font-weight: bold;
   color: ${({ theme }) => theme.colors.success};
   ${textShadow('successGlow')}
 `;
@@ -112,11 +113,11 @@ export default function ConvertScreen() {
   const themeColors = useTheme();
   const { source } = useSource();
   const { data: rates, isLoading, error } = useExchangeRates();
-  const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
+  const { spin, triggerSpin } = useSpinAnimation();
 
   const convertIconStyle = useMemo(
     () => ({
-      fontSize: 64,
+      fontSize: 48,
       color: themeColors.colors.embossedText,
       includeFontPadding: false,
       textAlignVertical: 'center' as const,
@@ -128,46 +129,52 @@ export default function ConvertScreen() {
     [themeColors],
   );
 
-  const amountInputStyle = useMemo(
-    () => ({
-      fontSize: 36,
-      fontWeight: 'bold' as const,
+  const [amount, setAmount] = useState<number | null>(1000);
+
+  const amountInputStyle = useMemo(() => {
+    const formatted =
+      amount != null
+        ? formatNumber(amount, {
+            separator: decimalSeparator,
+            delimiter: groupingSeparator,
+            precision: 2,
+          })
+        : '';
+    const len = formatted?.length ?? 0;
+    const fontSize = len > 12 ? 28 : len > 10 ? 32 : 36;
+
+    return {
+      fontFamily: themeColors.fonts.ledDisplay,
+      fontSize,
       color: themeColors.colors.primary,
       textAlign: 'center' as const,
       padding: 0,
       ...textShadowStyle(themeColors.textShadows.primaryGlow),
-    }),
-    [themeColors],
-  );
-  const [amount, setAmount] = useState<number | null>(1000);
+    };
+  }, [themeColors, amount]);
   const { targetCode, setTargetCode } = useTargetCurrency();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [resultCode, setResultCode] = useState('EUR');
   const [slotTrigger, setSlotTrigger] = useState(0);
-  const spinValue = useRef(new Animated.Value(0)).current;
-
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '720deg'],
-  });
 
   const currencyCodes = useMemo(
     () => (rates ?? []).map(r => r.code).sort(),
     [rates],
   );
 
-  const convert = () => {
-    spinValue.setValue(0);
-    Animated.timing(spinValue, {
-      toValue: 1,
-      duration: 800,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
+  const targetFlag = getCurrencyFlag(targetCode);
+  const targetRate = rates?.find(r => r.code === targetCode);
+  const rateDescription = targetRate
+    ? `${targetRate.amount} ${targetRate.code} = ${targetRate.rate.toFixed(
+        3,
+      )} CZK`
+    : targetCode;
 
-    const numAmount = amount;
-    if (!rates || numAmount == null) {
+  const convert = useCallback(() => {
+    triggerSpin();
+
+    if (!rates || amount == null || amount <= 0) {
       setResult('--');
       return;
     }
@@ -181,7 +188,7 @@ export default function ConvertScreen() {
       setResult('--');
       return;
     }
-    const converted = numAmount / unitRate;
+    const converted = amount / unitRate;
     setResult(
       formatNumber(converted, {
         separator: decimalSeparator,
@@ -191,7 +198,7 @@ export default function ConvertScreen() {
     );
     setResultCode(targetCode);
     setSlotTrigger(prev => prev + 1);
-  };
+  }, [amount, rates, targetCode, triggerSpin]);
 
   if (isLoading) {
     return (
@@ -222,7 +229,10 @@ export default function ConvertScreen() {
             <CurrencyInput
               style={amountInputStyle}
               value={amount}
-              onChangeValue={setAmount}
+              onChangeValue={v => {
+                if (v !== null && (v < 0 || v > 9999999999.99)) return;
+                setAmount(v);
+              }}
               delimiter={groupingSeparator}
               separator={decimalSeparator}
               precision={2}
@@ -235,21 +245,12 @@ export default function ConvertScreen() {
 
           <PickerWell onPress={() => setPickerOpen(true)} activeOpacity={0.7}>
             <PickerRow>
-              {getCurrencyFlag(targetCode) ? (
-                <PickerFlag>{getCurrencyFlag(targetCode)}</PickerFlag>
-              ) : null}
+              {targetFlag ? <PickerFlag>{targetFlag}</PickerFlag> : null}
               <PickerText>{targetCode}</PickerText>
             </PickerRow>
             <ChevronText>{'\u25BC'}</ChevronText>
           </PickerWell>
-          <FieldLabel>
-            {(() => {
-              const r = rates?.find(rt => rt.code === targetCode);
-              return r
-                ? `${r.amount} ${r.code} = ${r.rate.toFixed(3)} CZK`
-                : targetCode;
-            })()}
-          </FieldLabel>
+          <FieldLabel>{rateDescription}</FieldLabel>
 
           <PickerModal
             visible={pickerOpen}
@@ -308,8 +309,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   convertButton: {
-    width: 160,
-    height: 160,
+    width: 120,
+    height: 120,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

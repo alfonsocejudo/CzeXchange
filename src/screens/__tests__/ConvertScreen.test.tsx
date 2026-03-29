@@ -51,9 +51,8 @@ it('renders the target currency label', () => {
 it('converts CZK to target currency on button press', () => {
   renderWithTheme(<ConvertScreen />);
   fireEvent.press(screen.getByTestId('convert-button'));
-  // 1000 / 24.545 = 40.74 — digits rendered individually by SlotText
-  expect(screen.getAllByText('0').length).toBeGreaterThan(0);
-  expect(screen.getByText('.')).toBeTruthy();
+  // 1000 / 24.545 = 40.74
+  expect(screen.getByText('40.74')).toBeTruthy();
   expect(screen.getByText('Result in EUR')).toBeTruthy();
 });
 
@@ -94,5 +93,18 @@ it('shows -- when converting with no amount', () => {
   renderWithTheme(<ConvertScreen />);
   fireEvent.changeText(screen.getByDisplayValue('1,000.00'), '');
   fireEvent.press(screen.getByTestId('convert-button'));
-  expect(screen.getAllByText('-').length).toBe(2);
+  expect(screen.getByText('--')).toBeTruthy();
+});
+
+it('shows -- when converting with zero amount', () => {
+  renderWithTheme(<ConvertScreen />);
+  fireEvent.changeText(screen.getByDisplayValue('1,000.00'), '0');
+  fireEvent.press(screen.getByTestId('convert-button'));
+  expect(screen.getByText('--')).toBeTruthy();
+});
+
+it('rejects negative values as amount', () => {
+  renderWithTheme(<ConvertScreen />);
+  fireEvent.changeText(screen.getByDisplayValue('1,000.00'), '-500');
+  expect(screen.getByDisplayValue('1,000.00')).toBeTruthy();
 });

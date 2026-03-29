@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable } from 'react-native';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 import { ExchangeRate } from '../../types/exchangeRate';
 import { getCurrencyFlag } from '../../constants/flags';
-import { textShadow } from '../../theme/textShadows';
+import { textShadowStyle } from '../../theme/textShadows';
+import LedText from '../atoms/LedText';
 
 const RowContainer = styled.View`
   flex-direction: row;
@@ -56,12 +57,9 @@ const RateWell = styled.View`
   justify-content: center;
 `;
 
-const RateText = styled.Text`
-  font-size: 17px;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.primary};
-  ${textShadow('primaryGlow')}
-`;
+const rateTextBase = {
+  fontSize: 17,
+};
 
 interface CurrencyRowProps {
   rate: ExchangeRate;
@@ -72,11 +70,25 @@ export default React.memo(function CurrencyRow({
   rate,
   onPress,
 }: CurrencyRowProps) {
+  const theme = useTheme();
   const currencyLabel =
     rate.amount !== 1 ? `${rate.currency} (${rate.amount})` : rate.currency;
 
+  const rateStyle = useMemo(
+    () => ({
+      ...rateTextBase,
+      color: theme.colors.primary,
+      ...textShadowStyle(theme.textShadows.primaryGlow),
+    }),
+    [theme],
+  );
+
+  const handlePress = useCallback(() => {
+    onPress?.(rate.code);
+  }, [onPress, rate.code]);
+
   return (
-    <Pressable onPress={onPress ? () => onPress(rate.code) : undefined}>
+    <Pressable onPress={onPress ? handlePress : undefined}>
       <RowContainer>
         <CurrencyInfo>
           <FlagContainer>
@@ -88,7 +100,7 @@ export default React.memo(function CurrencyRow({
           </CurrencyDetails>
         </CurrencyInfo>
         <RateWell>
-          <RateText>{rate.rate.toFixed(3)}</RateText>
+          <LedText style={rateStyle}>{rate.rate.toFixed(3)}</LedText>
         </RateWell>
       </RowContainer>
     </Pressable>
