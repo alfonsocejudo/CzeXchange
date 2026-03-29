@@ -80,7 +80,7 @@ export default React.memo(function CurrencyRow({
       color: theme.colors.primary,
       ...textShadowStyle(theme.textShadows.primaryGlow),
     }),
-    [theme],
+    [theme.colors.primary, theme.textShadows.primaryGlow],
   );
 
   const handlePress = useCallback(() => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, StyleProp, TextStyle } from 'react-native';
 import { useTheme } from 'styled-components/native';
 
@@ -9,10 +9,10 @@ interface LedTextProps {
 
 export default function LedText({ children, style }: LedTextProps) {
   const theme = useTheme();
-
-  return (
-    <Text style={[{ fontFamily: theme.fonts.ledDisplay }, style]}>
-      {children}
-    </Text>
+  const baseStyle = useMemo(
+    () => ({ fontFamily: theme.fonts.ledDisplay }),
+    [theme.fonts.ledDisplay],
   );
+
+  return <Text style={[baseStyle, style]}>{children}</Text>;
 }

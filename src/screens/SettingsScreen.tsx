@@ -1,14 +1,13 @@
 import React from 'react';
 import { Animated, Pressable } from 'react-native';
-import styled, { useTheme } from 'styled-components/native';
+import styled from 'styled-components/native';
 import AppScreen from '../components/templates/AppScreen';
 import GlassPanel from '../components/organisms/GlassPanel';
 import Label from '../components/atoms/Label';
 import { useSource } from '../context/SourceContext';
 import { SOURCE_NAMES } from '../constants/sources';
 import { usePulseAnimation } from '../hooks/useAnimations';
-
-const version = require('../../package.json').version;
+import { version } from '../../package.json';
 
 const SectionLabel = styled(Label)`
   margin-bottom: ${({ theme }) => theme.spacing.md};
@@ -24,6 +23,13 @@ const Option = styled.View<{ selected: boolean }>`
   border-left-width: 3px;
   border-left-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : 'transparent'};
+`;
+
+const IndicatorGlow = styled(Animated.View)<{ selected: boolean }>`
+  ${({ selected, theme }) =>
+    selected
+      ? `shadow-color: ${theme.colors.primary}; shadow-offset: 0px 0px; shadow-opacity: 0.8; shadow-radius: 6px`
+      : ''};
 `;
 
 const Indicator = styled.View<{ selected: boolean }>`
@@ -43,6 +49,13 @@ const IndicatorDot = styled.View`
   height: 8px;
   border-radius: 4px;
   background-color: ${({ theme }) => theme.colors.primary};
+`;
+
+const OptionLabel = styled(Animated.Text)<{ selected: boolean }>`
+  font-size: 16px;
+  color: ${({ selected, theme }) =>
+    selected ? theme.colors.primary : theme.colors.onSurfaceVariant};
+  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
 `;
 
 const VersionText = styled.Text`
@@ -68,43 +81,25 @@ function SourceOption({
   selected: boolean;
   onPress: () => void;
 }) {
-  const theme = useTheme();
   const pulseAnim = usePulseAnimation(selected);
 
   return (
     <Pressable onPress={onPress}>
       <Option selected={selected}>
-        <Animated.View
-          style={[
-            selected
-              ? {
-                  shadowColor: theme.colors.primary,
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.8,
-                  shadowRadius: 6,
-                }
-              : undefined,
-            selected && { opacity: pulseAnim },
-          ]}
+        <IndicatorGlow
+          selected={selected}
+          style={selected ? { opacity: pulseAnim } : undefined}
         >
           <Indicator selected={selected}>
             {selected && <IndicatorDot />}
           </Indicator>
-        </Animated.View>
-        <Animated.Text
-          style={[
-            {
-              fontSize: 16,
-              color: selected
-                ? theme.colors.primary
-                : theme.colors.onSurfaceVariant,
-              fontWeight: selected ? 'bold' : 'normal',
-            },
-            selected && { opacity: pulseAnim },
-          ]}
+        </IndicatorGlow>
+        <OptionLabel
+          selected={selected}
+          style={selected ? { opacity: pulseAnim } : undefined}
         >
           {label}
-        </Animated.Text>
+        </OptionLabel>
       </Option>
     </Pressable>
   );

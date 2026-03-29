@@ -17,6 +17,7 @@ const DIGITS = '0123456789';
 
 interface SlotTextProps {
   value: string;
+  /** Increment to trigger the slot-machine animation. When 0, the value displays immediately. */
   animate: number;
   stale?: boolean;
   fontSize?: number;

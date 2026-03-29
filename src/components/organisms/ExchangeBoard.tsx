@@ -120,7 +120,7 @@ function sortRates(rates: ExchangeRate[], mode: SortMode): ExchangeRate[] {
 const rateKeyExtractor = (item: ExchangeRate) => item.code;
 
 function formatTimestamp(ms?: number): string {
-  if (!ms) {
+  if (ms == null) {
     return '--';
   }
   const d = new Date(ms);

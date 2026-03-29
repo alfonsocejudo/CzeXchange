@@ -110,53 +110,59 @@ const ConvertButtonWrapper = styled.View`
 `;
 
 export default function ConvertScreen() {
-  const themeColors = useTheme();
+  const theme = useTheme();
   const { source } = useSource();
   const { data: rates, isLoading, error } = useExchangeRates();
   const { spin, triggerSpin } = useSpinAnimation();
+  const { targetCode, setTargetCode } = useTargetCurrency();
+
+  const [amount, setAmount] = useState<number | null>(1000);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [resultCode, setResultCode] = useState('EUR');
+  const [slotTrigger, setSlotTrigger] = useState(0);
 
   const convertIconStyle = useMemo(
     () => ({
       fontSize: 48,
-      color: themeColors.colors.embossedText,
+      color: theme.colors.embossedText,
       includeFontPadding: false,
       textAlignVertical: 'center' as const,
       textAlign: 'center' as const,
       marginTop: Platform.OS === 'android' ? -6 : 0,
       marginLeft: Platform.OS === 'android' ? -2 : 0,
-      ...textShadowStyle(themeColors.textShadows.embossedStrong),
+      ...textShadowStyle(theme.textShadows.embossedStrong),
     }),
-    [themeColors],
+    [theme.colors.embossedText, theme.textShadows.embossedStrong],
   );
 
-  const [amount, setAmount] = useState<number | null>(1000);
-
-  const amountInputStyle = useMemo(() => {
-    const formatted =
-      amount != null
-        ? formatNumber(amount, {
-            separator: decimalSeparator,
-            delimiter: groupingSeparator,
-            precision: 2,
-          })
-        : '';
+  const amountFontSize = useMemo(() => {
+    if (amount == null) return 36;
+    const formatted = formatNumber(amount, {
+      separator: decimalSeparator,
+      delimiter: groupingSeparator,
+      precision: 2,
+    });
     const len = formatted?.length ?? 0;
-    const fontSize = len > 12 ? 28 : len > 10 ? 32 : 36;
+    return len > 12 ? 28 : len > 10 ? 32 : 36;
+  }, [amount]);
 
-    return {
-      fontFamily: themeColors.fonts.ledDisplay,
-      fontSize,
-      color: themeColors.colors.primary,
+  const amountInputStyle = useMemo(
+    () => ({
+      fontFamily: theme.fonts.ledDisplay,
+      fontSize: amountFontSize,
+      color: theme.colors.primary,
       textAlign: 'center' as const,
       padding: 0,
-      ...textShadowStyle(themeColors.textShadows.primaryGlow),
-    };
-  }, [themeColors, amount]);
-  const { targetCode, setTargetCode } = useTargetCurrency();
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [resultCode, setResultCode] = useState('EUR');
-  const [slotTrigger, setSlotTrigger] = useState(0);
+      ...textShadowStyle(theme.textShadows.primaryGlow),
+    }),
+    [
+      theme.fonts.ledDisplay,
+      theme.colors.primary,
+      theme.textShadows.primaryGlow,
+      amountFontSize,
+    ],
+  );
 
   const currencyCodes = useMemo(
     () => (rates ?? []).map(r => r.code).sort(),
@@ -164,7 +170,10 @@ export default function ConvertScreen() {
   );
 
   const targetFlag = getCurrencyFlag(targetCode);
-  const targetRate = rates?.find(r => r.code === targetCode);
+  const targetRate = useMemo(
+    () => rates?.find(r => r.code === targetCode),
+    [rates, targetCode],
+  );
   const rateDescription = targetRate
     ? `${targetRate.amount} ${targetRate.code} = ${targetRate.rate.toFixed(
         3,
@@ -237,7 +246,7 @@ export default function ConvertScreen() {
               separator={decimalSeparator}
               precision={2}
               keyboardType="numeric"
-              placeholderTextColor={themeColors.colors.textDisabled}
+              placeholderTextColor={theme.colors.textDisabled}
               placeholder="0"
             />
           </InputWell>

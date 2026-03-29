@@ -11,8 +11,6 @@ const Row = styled.View`
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const Name = styled(Label)``;
-
 const RefreshIcon = styled(Animated.Text)`
   font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.onSurfaceVariant};
@@ -34,7 +32,7 @@ export default function SourceTag({ name, onRefresh }: SourceTagProps) {
 
   return (
     <Row>
-      <Name>{name}</Name>
+      <Label>{name}</Label>
       {onRefresh && (
         <Pressable onPress={handleRefresh} hitSlop={8}>
           <RefreshIcon style={{ transform: [{ rotate: spin }] }}>

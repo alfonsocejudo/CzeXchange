@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import {
-  View,
   TouchableOpacity,
   Text,
   ImageBackground,
@@ -11,7 +10,7 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 import ExchangeRatesScreen from '../../screens/ExchangeRatesScreen';
 import ConvertScreen from '../../screens/ConvertScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
@@ -27,6 +26,119 @@ const TAB_LABELS: Record<string, string> = {
   Settings: 'SETTINGS',
 };
 
+// --- Tab Icon Styled Components ---
+
+const IconContainer = styled.View<{ size: number }>`
+  width: ${({ size }) => size}px;
+  height: ${({ size }) => size}px;
+`;
+
+const RatesIconContainer = styled(IconContainer)`
+  justify-content: space-evenly;
+`;
+
+const BarRow = styled.View<{ knobH: number }>`
+  flex-direction: row;
+  align-items: center;
+  height: ${({ knobH }) => knobH}px;
+`;
+
+const Bar = styled.View<{ flex: number; barH: number; color: string }>`
+  flex: ${({ flex }) => flex};
+  height: ${({ barH }) => barH}px;
+  background-color: ${({ color }) => color};
+`;
+
+const Knob = styled.View<{
+  knobW: number;
+  knobH: number;
+  color: string;
+}>`
+  width: ${({ knobW }) => knobW}px;
+  height: ${({ knobH }) => knobH}px;
+  background-color: ${({ color }) => color};
+  border-radius: 1px;
+`;
+
+const AbsView = styled.View<{
+  left?: number;
+  top?: number;
+  right?: number;
+  bottom?: number;
+  w: number;
+  h: number;
+  bg?: string;
+  borderW?: number;
+  borderC?: string;
+  radius?: number;
+}>`
+  position: absolute;
+  left: ${({ left }) => (left != null ? `${left}px` : 'auto')};
+  top: ${({ top }) => (top != null ? `${top}px` : 'auto')};
+  right: ${({ right }) => (right != null ? `${right}px` : 'auto')};
+  bottom: ${({ bottom }) => (bottom != null ? `${bottom}px` : 'auto')};
+  width: ${({ w }) => w}px;
+  height: ${({ h }) => h}px;
+  ${({ bg }) => bg && `background-color: ${bg}`};
+  ${({ borderW, borderC }) =>
+    borderW && borderC
+      ? `border-width: ${borderW}px; border-color: ${borderC}`
+      : ''};
+  ${({ radius }) => (radius != null ? `border-radius: ${radius}px` : '')};
+`;
+
+const ArrowView = styled.View<{
+  right: number;
+  bottom: number;
+  leftW: number;
+  topW: number;
+  bottomW: number;
+  color: string;
+}>`
+  position: absolute;
+  right: ${({ right }) => right}px;
+  bottom: ${({ bottom }) => bottom}px;
+  width: 0px;
+  height: 0px;
+  border-left-width: ${({ leftW }) => leftW}px;
+  border-top-width: ${({ topW }) => topW}px;
+  border-bottom-width: ${({ bottomW }) => bottomW}px;
+  border-left-color: ${({ color }) => color};
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+`;
+
+const GlowContainer = styled.View<{
+  glowColor: string;
+  focused: boolean;
+}>`
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  ${({ focused, glowColor }) =>
+    focused
+      ? `shadow-color: ${glowColor}; shadow-offset: 0px 0px; shadow-opacity: 0.8; shadow-radius: 8px`
+      : ''};
+`;
+
+const TabLabelText = styled.Text<{
+  labelColor: string;
+  focused: boolean;
+  glowColor?: string;
+  glowRadius?: number;
+}>`
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: ${({ labelColor }) => labelColor};
+  ${({ focused, glowColor, glowRadius }) =>
+    focused && glowColor
+      ? `text-shadow-color: ${glowColor}; text-shadow-offset: 0px 0px; text-shadow-radius: ${
+          glowRadius ?? 8
+        }px`
+      : ''};
+`;
+
 // --- Tab Icon Components ---
 
 type IconProps = { color: string; size: number };
@@ -38,27 +150,15 @@ function RatesIcon({ color, size }: IconProps) {
   const positions = [0.25, 0.7, 0.45, 0.2];
 
   return (
-    <View style={{ width: size, height: size, justifyContent: 'space-evenly' }}>
+    <RatesIconContainer size={size}>
       {positions.map((pos, i) => (
-        <View
-          key={i}
-          style={{ flexDirection: 'row', alignItems: 'center', height: knobH }}
-        >
-          <View style={{ flex: pos, height: barH, backgroundColor: color }} />
-          <View
-            style={{
-              width: knobW,
-              height: knobH,
-              backgroundColor: color,
-              borderRadius: 1,
-            }}
-          />
-          <View
-            style={{ flex: 1 - pos, height: barH, backgroundColor: color }}
-          />
-        </View>
+        <BarRow key={i} knobH={knobH}>
+          <Bar flex={pos} barH={barH} color={color} />
+          <Knob knobW={knobW} knobH={knobH} color={color} />
+          <Bar flex={1 - pos} barH={barH} color={color} />
+        </BarRow>
       ))}
-    </View>
+    </RatesIconContainer>
   );
 }
 
@@ -68,48 +168,32 @@ function ConvertIcon({ color, size }: IconProps) {
   const offset = size * 0.32;
 
   return (
-    <View style={{ width: size, height: size }}>
-      {/* Back rectangle */}
-      <View
-        style={{
-          position: 'absolute',
-          left: size * 0.05,
-          top: size * 0.05,
-          width: rectSize,
-          height: rectSize,
-          borderWidth: bw,
-          borderColor: color,
-        }}
+    <IconContainer size={size}>
+      <AbsView
+        left={size * 0.05}
+        top={size * 0.05}
+        w={rectSize}
+        h={rectSize}
+        borderW={bw}
+        borderC={color}
       />
-      {/* Front rectangle */}
-      <View
-        style={{
-          position: 'absolute',
-          left: size * 0.05 + offset,
-          top: size * 0.05 + offset,
-          width: rectSize,
-          height: rectSize,
-          borderWidth: bw,
-          borderColor: color,
-        }}
+      <AbsView
+        left={size * 0.05 + offset}
+        top={size * 0.05 + offset}
+        w={rectSize}
+        h={rectSize}
+        borderW={bw}
+        borderC={color}
       />
-      {/* Arrow indicator */}
-      <View
-        style={{
-          position: 'absolute',
-          right: size * 0.08,
-          bottom: size * 0.18,
-          width: 0,
-          height: 0,
-          borderLeftWidth: size * 0.1,
-          borderTopWidth: size * 0.07,
-          borderBottomWidth: size * 0.07,
-          borderLeftColor: color,
-          borderTopColor: 'transparent',
-          borderBottomColor: 'transparent',
-        }}
+      <ArrowView
+        right={size * 0.08}
+        bottom={size * 0.18}
+        leftW={size * 0.1}
+        topW={size * 0.07}
+        bottomW={size * 0.07}
+        color={color}
       />
-    </View>
+    </IconContainer>
   );
 }
 
@@ -122,57 +206,46 @@ function SettingsIcon({ color, size }: IconProps) {
   const dotD = size * 0.14;
 
   return (
-    <View style={{ width: size, height: size }}>
-      {/* Gear teeth */}
+    <IconContainer size={size}>
       {Array.from({ length: 8 }).map((_, i) => {
         const angle = (i * Math.PI * 2) / 8;
         return (
-          <View
+          <AbsView
             key={i}
-            style={{
-              position: 'absolute',
-              left: center + r * Math.cos(angle) - toothSize / 2,
-              top: center + r * Math.sin(angle) - toothSize / 2,
-              width: toothSize,
-              height: toothSize,
-              backgroundColor: color,
-              borderRadius: 1,
-            }}
+            left={center + r * Math.cos(angle) - toothSize / 2}
+            top={center + r * Math.sin(angle) - toothSize / 2}
+            w={toothSize}
+            h={toothSize}
+            bg={color}
+            radius={1}
           />
         );
       })}
-      {/* Ring */}
-      <View
-        style={{
-          position: 'absolute',
-          left: center - ringD / 2,
-          top: center - ringD / 2,
-          width: ringD,
-          height: ringD,
-          borderRadius: ringD / 2,
-          borderWidth: bw,
-          borderColor: color,
-        }}
+      <AbsView
+        left={center - ringD / 2}
+        top={center - ringD / 2}
+        w={ringD}
+        h={ringD}
+        radius={ringD / 2}
+        borderW={bw}
+        borderC={color}
       />
-      {/* Center dot */}
-      <View
-        style={{
-          position: 'absolute',
-          left: center - dotD / 2,
-          top: center - dotD / 2,
-          width: dotD,
-          height: dotD,
-          borderRadius: dotD / 2,
-          backgroundColor: color,
-        }}
+      <AbsView
+        left={center - dotD / 2}
+        top={center - dotD / 2}
+        w={dotD}
+        h={dotD}
+        radius={dotD / 2}
+        bg={color}
       />
-    </View>
+    </IconContainer>
   );
 }
 
-const TAB_ICONS: Record<string, (props: IconProps) => React.ReactElement> = {
-  ExchangeRates: props => <RatesIcon {...props} />,
-  Convert: props => <ConvertIcon {...props} />,
+const TAB_ICONS: Record<string, React.FC<IconProps>> = {
+  ExchangeRates: RatesIcon,
+  Convert: ConvertIcon,
+  // Gear icon renders larger than the others for visual balance
   Settings: ({ color }) => <SettingsIcon color={color} size={26} />,
 };
 
@@ -201,28 +274,17 @@ function TabButton({
       <Animated.View
         style={[styles.tabButtonContent, focused && { opacity: pulseAnim }]}
       >
-        <View
-          style={[
-            styles.iconContainer,
-            focused && {
-              shadowColor: theme.colors.primary,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.8,
-              shadowRadius: 8,
-            },
-          ]}
-        >
-          {Icon && Icon({ color, size: 22 })}
-        </View>
-        <Text
-          style={[
-            styles.tabLabel,
-            { color },
-            focused && textShadowStyle(theme.textShadows.tabActiveGlow),
-          ]}
+        <GlowContainer glowColor={theme.colors.primary} focused={focused}>
+          {Icon && <Icon color={color} size={22} />}
+        </GlowContainer>
+        <TabLabelText
+          labelColor={color}
+          focused={focused}
+          glowColor={theme.textShadows.tabActiveGlow.color}
+          glowRadius={theme.textShadows.tabActiveGlow.radius}
         >
           {label}
-        </Text>
+        </TabLabelText>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -232,7 +294,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.tabBarWrapper, { paddingBottom: insets.bottom + 2 }]}>
+    <Animated.View
+      style={[styles.tabBarWrapper, { paddingBottom: insets.bottom + 2 }]}
+    >
       <ImageBackground
         source={images.tabBar}
         style={styles.tabBarImage}
@@ -247,7 +311,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           />
         ))}
       </ImageBackground>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -276,7 +340,7 @@ export default function BottomTabs() {
       color: theme.colors.embossedText,
       ...textShadowStyle(theme.textShadows.embossed),
     }),
-    [theme],
+    [theme.colors.embossedText, theme.textShadows.embossed],
   );
 
   const renderTabBar = useCallback(
@@ -344,15 +408,5 @@ const styles = StyleSheet.create({
   tabButtonContent: {
     alignItems: 'center',
     gap: 6,
-  },
-  iconContainer: {
-    height: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2.5,
   },
 });
